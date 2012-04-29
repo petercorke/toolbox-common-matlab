@@ -1,8 +1,9 @@
+%DIFF2 Two point difference
 %
-%  DIFF3(v)
+% D = DIFF2(V) is the 2-point difference for each point in the vector v
+% and the first element is zero.  The vector D has the same length as V.
 %
-%  compute 2-point difference for each point in the vector v.
-%
+% See also DIFF.
 function d = diff2(v)
 	[r,c] =size(v);
 

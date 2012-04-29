@@ -6,7 +6,7 @@
 %
 % PLOTP(P, LS) as above but the line style arguments LS are passed to plot.
 %
-% See also plot, plot2.
+% See also PLOT, PLOT2.
 function h = plotp(p1, varargin)
 
     if length(varargin) == 0

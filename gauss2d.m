@@ -1,24 +1,19 @@
-%GAUSS2d	Gaussian kernel
+%GAUSS2D    Gaussian kernel
 %
-%	k = gauss2d(im, c, sigma)
-%
-%	Returns a unit volume Gaussian smoothing kernel.  The Gaussian has 
-%	a standard deviation of sigma, and the convolution
-%	kernel has a half size of w, that is, k is (2W+1) x (2W+1).
-%
-%	If w is not specified it defaults to 2*sigma.
-%
+% OUT = GAUSS2D(IM, SIGMA, C) is a unit volume Gaussian kernel rendered into
+% matrix OUT (WxH) the same size as IM (WxH). The Gaussian has a standard 
+% deviation of SIGMA.  The Gaussian is centered at C=[U,V].
 function m = gaus2d(im, sigma, c)
 
 
-	if length(sigma) == 1,
-		sx = sigma(1);
+    if length(sigma) == 1
+        sx = sigma(1);
         sy = sigma(1);
     else
-		sx = sigma(1);
+        sx = sigma(1);
         sy = sigma(2);
-	end
+    end
 
-	[x,y] = imeshgrid(im);
+    [x,y] = imeshgrid(im);
 
-	m = 1/(2*pi*sx*sy) * exp( -(((x-c(1))/sx).^2 + ((y-c(2))/sy).^2)/2);
+    m = 1/(2*pi*sx*sy) * exp( -(((x-c(1))/sx).^2 + ((y-c(2))/sy).^2)/2);

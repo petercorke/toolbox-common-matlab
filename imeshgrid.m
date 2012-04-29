@@ -1,8 +1,8 @@
 %IMESHGRID Domain matrices for image
 %
-% [U,V] = IMESHGRID(IM) return matrices that describe the domain of image IM
-% and can be used for the evaluation of functions over the image. The 
-% element U(v,u) = u and V(v,u) = v.
+% [U,V] = IMESHGRID(IM) are matrices that describe the domain of image IM
+% and can be used for the evaluation of functions over the image. U and V are
+% the same szie as IM.  The element U(v,u) = u and V(v,u) = v.
 %
 % [U,V] = IMESHGRID(W, H) as above but the domain is WxH.
 %

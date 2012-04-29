@@ -1,7 +1,6 @@
-%POLYGON - General polygon class
+%POLYGON Polygon class
 %
-%   p = Polygon(vertices);
-%
+% A general class for manipulating polygons and vectors of polygons.
 %
 % Methods::
 %  plot           Plot polygon
@@ -24,7 +23,7 @@
 %  n          Number of vertices
 %
 % Notes::
-% - this is reference class object
+% - This is reference class object
 % - Polygon objects can be used in vectors and arrays
 %
 % Acknowledgement::
@@ -34,7 +33,7 @@
 %  Kirill K. Pankratov, kirill@plume.mit.edu,
 %  http://puddle.mit.edu/~glenn/kirill/saga.html
 % and require a licence.  However the author does not respond to email regarding 
-% the licence, so use with care.
+% the licence, so use with care, and modify with acknowledgement.
 
 % TODO
 %  split the code in two.  Simple polygon functions in Polgon class, subclass with
