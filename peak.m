@@ -72,7 +72,7 @@ function [yp,xpout] = peak(y, varargin)
     % find the maxima
     if opt.scale > 1
         % compare to a moving window max filtered version
-        k = find(y' == maxfilt(y, opt.scale*2+1));
+        k = find(y' == filt1d(y, 'max', 'width', opt.scale*2+1));
     else
         % take the zero crossings
         dv = diff(y);
