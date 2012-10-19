@@ -9,15 +9,24 @@
 % means clockwise, non zero is counter-clockwise.  Note that direction is 
 % with respect to y-axis upward, in matrix coordinate frame, not image frame.
 %
+% [E,D] = EDGELIST(IM, SEED, DIRECTION) as above but also returns a vector
+% of edge segment directions which have values 1 to 8 representing W SW S SE E
+% NW N NW respectively.
+%
 % Notes::
 % - IM is a binary image where 0 is assumed to be background, non-zero 
 %   is an object.
 % - SEED must be a point on the edge of the region.
 % - The seed point is always the first element of the returned edgelist.
 %
+% Reference::
+% - METHODS TO ESTIMATE AREAS AND PERIMETERS OF BLOB-LIKE OBJECTS: A COMPARISON
+%   Luren Yang, Fritz Albregtsen, Tor Lgnnestad and Per Grgttum
+%   IAPR Workshop on Machine Vision Applications Dec. 13-15, 1994, Kawasaki
+%
 % See also ILABEL.
 
-function e = edgelist(im, P, direction)
+function [e,d] = edgelist(im, P, direction)
 
     % deal with direction argument
     if nargin == 2
@@ -41,6 +50,7 @@ function e = edgelist(im, P, direction)
     end
 
     e = P;  % initialize the edge list
+    dir = []; % initialize the direction list
 
     % these are directions of 8-neighbours in a clockwise direction
     dirs = [-1 0; -1 1; 0 1; 1 1; 1 0; 1 -1; 0 -1; -1 -1];
@@ -54,6 +64,7 @@ function e = edgelist(im, P, direction)
             end
         end
 
+
         % now test for directions relative to Q
         for j=neighbours
             % get index of neighbour's direction in range [1,8]
@@ -61,6 +72,7 @@ function e = edgelist(im, P, direction)
             if k > 8
                 k = k - 8;
             end
+            dir = [dir; k];
 
             % compute coordinate of the k'th neighbour
             Nk = P + dirs(k,:);
@@ -81,6 +93,10 @@ function e = edgelist(im, P, direction)
 
         % keep going, add P to the edgelist
         e = [e; P];
+    end
+    
+    if nargout > 1
+        d = dir;
     end
 end
 
