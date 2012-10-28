@@ -4,6 +4,8 @@
 % and can be used for the evaluation of functions over the image. U and V are
 % the same szie as IM.  The element U(v,u) = u and V(v,u) = v.
 %
+% [U,V] = IMESHGRID(IM, N) as above but...
+%
 % [U,V] = IMESHGRID(W, H) as above but the domain is WxH.
 %
 % [U,V] = IMESHGRID(SIZE) as above but the domain is described size which is
@@ -32,18 +34,44 @@ function [U,V] = imeshgrid(a1, a2)
 
     if nargin == 1
         if length(a1) == 1
+            % imeshgrid(S)
             % we specified a size for a square output image
             [U,V] = meshgrid(1:a1, 1:a1);
         elseif length(a1) == 2
+            % imeshgrid([W H])
             % we specified a size for a rectangular output image (w,h)
             [U,V] = meshgrid(1:a1(1), 1:a1(2));
         elseif ndims(a1) >= 2
+            % imeshgrid(IM)
             [U,V] = meshgrid(1:numcols(a1), 1:numrows(a1));
         else
             error('incorrect argument');
         end
     elseif nargin == 2
-        [U,V] = meshgrid(1:a1, 1:a2);
+        if ~isscalar(a1)
+            nu = 1; nv = 1;
+            % imeshgrid(IM, ...)
+            if length(a2) == 1
+                % imeshgrid(IM, N)
+                nu = a2; nv = a2;
+            elseif length(a2) == 2
+                % imeshgrid(IM, [NX NY])
+                nu = a2(1); nv = a2(2);
+            else
+                error('MVTB:imeshgrid:badarg', 'bad step size');
+            end
+            [U,V] = meshgrid(1:nu:numcols(a1), 1:nv:numrows(a1));
+            
+        else
+            % imeshgrid(X, Y)
+            if ~isvec(a1)
+                a1 = 1:a1;
+            end
+            if ~isvec(a2)
+                a2 = 1:a2;
+            end
+            [U,V] = meshgrid(a1, a2);
+        end
     end
-        
-        
+    
+    
