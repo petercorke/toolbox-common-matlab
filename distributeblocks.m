@@ -1,0 +1,66 @@
+function [  ] = distributeblocks( mdlName )
+%% DISTRIBUTEBLOCKS Equidistantly distributes blocks in a Simulink block library.
+% =========================================================================
+%
+%   [  ] = distributeBlocks( 'mdlName' )
+%
+%  Description::
+%    The matlab functions to create Simulink blocks from symbolic
+%    expresssions actually place all blocks on top of each other. This
+%    function scans a simulink model and rearranges the blocks on an
+%    equidistantly spaced grid.
+%
+%    The Simulink model must already be opened before running this
+%    function!
+%
+%  Input::
+%       mdlName: Name of the Simulink model to work in.
+%
+%  Authors::
+%        Jörn Malzahn   
+%        2012 RST, Technische Universität Dortmund, Germany
+%        http://www.rst.e-technik.tu-dortmund.de  
+%
+%  See also symexpr2slblock, doesblockexist.
+
+
+%% Get a list of all first level blocks:
+blockNames = find_system(mdlName,'SearchDepth',1);
+blockNames = blockNames(2:end); % First cell contains the model name
+
+%% Determine the maximum width and height of a block
+allPosC = get_param(blockNames,'Position');
+allPosM = cell2mat(allPosC); % [left top right bottom] The maximum value for a coordinate is 32767
+
+widths  = allPosM(:,3)-allPosM(:,1);
+heights = allPosM(:,4)-allPosM(:,2);
+maxWidth = max(widths);
+maxHeight = max(heights);
+
+%% Set grid spacing
+wBase = 2*maxWidth;
+hBase = 2*maxHeight;
+
+%% Start rearranging blocks
+nBlocks = size(allPosM,1);
+nColRow = ceil(sqrt(nBlocks));
+set_param(mdlName,'lock','off');
+for iBlocks = 1:nBlocks
+    
+    % block location on grid
+    [row,col] = ind2sub([nColRow, nColRow],iBlocks);
+    
+    % compute block coordinates
+    left = col*wBase;
+    right = left+maxWidth;
+    top = row*hBase;
+    bottom = top+maxHeight;
+    
+    % apply new coordinates
+    set_param(blockNames{iBlocks},'Position',[left top right bottom])
+    
+end
+set_param(mdlName,'lock','on');
+
+end
+
