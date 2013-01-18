@@ -1,37 +1,32 @@
-function [count] = multidfprintf(idVec,varargin)
-%% MULTIDFPRINTF Print formatted text to multiple IDs.
+%MULTIDFPRINTF Print formatted text to multiple IDs.
 %
-%   [count] = multidfprintf(idVec, FORMAT, A, ...)
+% count = multidfprintf(IDVEC, FORMAT, A, ...) is the vector with the
+% number of bytes written to each target ID specified in the vector IDVEC.
+% FORMAT is the format string as used by sprintf and fprintf. 
+% A is the array of elements, to which the format will be applied similar
+% to sprintf and fprint.
 %
-%  Description::
-%    Matlab ships with a function for writing formatted strings into a text
-%    file or to the console (fprintf). The function works with single 
-%    target identifiers (file, console, string). This function uses the 
-%    same syntax as for the fprintf function, but also permits a vector of 
-%    multiple target identifiers.
+% Notes::
+% Matlab ships with a function for writing formatted strings into a text
+% file or to the console (fprintf). The function works with single 
+% target identifiers (file, console, string). This function uses the 
+% same syntax as for the fprintf function, but also permits a vector of 
+% multiple target identifiers.
 %
-%  Input::
-%       idVec:         Vector of target IDs.
-%       FORMAT:        Format string as used by sprintf and fprintf. 
-%       A:             Array of elements, to which the format will be applied.
+% Example::
+% % Create and open a new example file:
+% fid = fopen('exampleFile.txt','w+');
+% % Write something to the file and the console simultaneously:
+% multidfprintf([1 FID],'% s % d % d % d!\n','This is a test!',1,2,3);
+% % Close the file:
+% fclose(FID);
 %
-%  Output::
-%       count:         Vector with the number of bytes written to each ID
+% Authors::
+%  Jörn Malzahn   
+%  2012 RST, Technische Universität Dortmund, Germany
+%  http://www.rst.e-technik.tu-dortmund.de
 %
-%  Example::
-%        % Create and open a new example file:
-%        fid = fopen('exampleFile.txt','w+');
-%        % Write something to the file and the console simultaneously:
-%        multidfprintf([1 FID],'% s % d % d % d!\n','This is a test!',1,2,3);
-%        % Close the file:
-%        fclose(FID);
-%
-%  Authors::
-%        Jörn Malzahn   
-%        2012 RST, Technische Universität Dortmund, Germany
-%        http://www.rst.e-technik.tu-dortmund.de
-%
-%  See also fprintf,sprintf.
+% See also fprintf,sprintf.
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %
@@ -51,6 +46,8 @@ function [count] = multidfprintf(idVec,varargin)
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
+
+function [count] = multidfprintf(idVec,varargin)
  
 if isempty(idVec)
     warning('multIDFprintf','Target ID is empty. Nothing is written.')

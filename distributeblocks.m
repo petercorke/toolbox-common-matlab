@@ -1,28 +1,22 @@
-function [  ] = distributeblocks( mdlName )
-%% DISTRIBUTEBLOCKS Equidistantly distributes blocks in a Simulink block library.
-% =========================================================================
+%DISTRIBUTEBLOCKS Equidistantly distributes blocks in a Simulink block library.
 %
-%   [  ] = distributeBlocks( 'mdlName' )
+%  distributeBlocks( 'mdlName' )
+%  The string 'mdlName' holds the name of the Simulink model to work in.
 %
-%  Description::
-%    The matlab functions to create Simulink blocks from symbolic
-%    expresssions actually place all blocks on top of each other. This
-%    function scans a simulink model and rearranges the blocks on an
-%    equidistantly spaced grid.
+% Notes::
+% -The matlab functions to create Simulink blocks from symbolic
+%  expresssions actually place all blocks on top of each other. This
+%  function scans a simulink model and rearranges the blocks on an
+%  equidistantly spaced grid.
+% -The Simulink model must already be opened before running this
+%  function!
 %
-%    The Simulink model must already be opened before running this
-%    function!
-%
-%  Input::
-%       mdlName: Name of the Simulink model to work in.
-%
-%  Authors::
-%        Jörn Malzahn   
-%        2012 RST, Technische Universität Dortmund, Germany
-%        http://www.rst.e-technik.tu-dortmund.de  
+% Authors::
+%  Jörn Malzahn   
+%  2012 RST, Technische Universität Dortmund, Germany
+%  http://www.rst.e-technik.tu-dortmund.de  
 %
 %  See also symexpr2slblock, doesblockexist.
-
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %
@@ -42,6 +36,8 @@ function [  ] = distributeblocks( mdlName )
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
+
+function [  ] = distributeblocks( mdlName )
  
 %% Get a list of all first level blocks:
 blockNames = find_system(mdlName,'SearchDepth',1);

@@ -1,30 +1,26 @@
-function [] = symexpr2slblock(varargin)
-%% SYMEXPR2SLBLOCK Version independent Embedded Matlab Function block creation for symbolic expressions.
+% SYMEXPR2SLBLOCK Version independent Embedded Matlab Function block creation for symbolic expressions.
 %
-%   [] = symexpr2slblock(varargin)
+% symexpr2slblock(VARARGIN)
+% The input arguments are just as used with the functions 
+% 'emlBlock' or 'matlabFunctionBlock'.
 %
-%  Description::
-%    In Symbolic Toolbox versions prior to V5.7 (2011b) the function to 
-%    create Embedded Matlab Function blocks from symbolic expressions is 
-%    'emlBlock'.
-%    Since V5.7 (2011b) there is another function named 
-%    'matlabFunctionBlock' which replaces the old function. 
+% Notes::
+%  In Symbolic Toolbox versions prior to V5.7 (2011b) the function to 
+%  create Embedded Matlab Function blocks from symbolic expressions is 
+%  'emlBlock'.
+%  Since V5.7 (2011b) there is another function named 
+%  'matlabFunctionBlock' which replaces the old function. 
 %
-%    symexpr2slblock is a wrapper around both functions, which apriori 
-%    checks for the installed Symbolic Toolbox version and calls the 
-%    required function accordingly.
+%  symexpr2slblock is a wrapper around both functions, which apriori 
+%  checks for the installed Symbolic Toolbox version and calls the 
+%  required function accordingly.
 %
-%  Input::
-%       varargin:  Input arguments as used with 'emlBlock' or
-%                  'matlabFunctionBlock'.
+% Authors::
+%  Jörn Malzahn   
+%  2012 RST, Technische Universität Dortmund, Germany
+%  http://www.rst.e-technik.tu-dortmund.de
 %
-%  Authors::
-%        Jörn Malzahn   
-%        2012 RST, Technische Universität Dortmund, Germany
-%        http://www.rst.e-technik.tu-dortmund.de
-%
-%  See also emlBlock, matlabFunctionBlock.
-%
+% See also emlBlock, matlabFunctionBlock.
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %
@@ -44,6 +40,8 @@ function [] = symexpr2slblock(varargin)
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
+
+function [] = symexpr2slblock(varargin)
  
 % V5.8 (R2012a)
 if verLessThan('symbolic','5.7')                                   

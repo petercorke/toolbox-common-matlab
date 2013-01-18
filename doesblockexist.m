@@ -1,22 +1,15 @@
-function [res] = doesblockexist(mdlName, blockAddress)
-%% DOESBLOCKEXIST Checks wether a Simulink block already exists in a Simulink model.
-% =========================================================================
+%DOESBLOCKEXIST Checks wether a Simulink block already exists in a Simulink model.
 %
-% [res] = doesblockexist(mdlName, blockAddress)
+% RES = doesblockexist(MDLNAME, BLOCKADDRESS) is true, if the block exists, false otherwise.
+% MDLNAME is the name of the Simulink model to work in.
+% BLOCKADRESS is the address of the Simulink block within the model.
 %
-%  Input::
-%       mdlName: Name of the Simulink model to work in.
-%       blockAdress: Adress of the Simulink block within the model.
+% Authors::
+%  Jörn Malzahn   
+%  2012 RST, Technische Universität Dortmund, Germany
+%  http://www.rst.e-technik.tu-dortmund.de  
 %
-%  Input::
-%       res: True, if the block exists, false otherwise.
-%
-%  Authors::
-%        Jörn Malzahn   
-%        2012 RST, Technische Universität Dortmund, Germany
-%        http://www.rst.e-technik.tu-dortmund.de  
-%
-%  See also symexpr2slblock, distributeblocks.
+% See also symexpr2slblock, distributeblocks.
 
 % Copyright (C) 1993-2012, by Peter I. Corke
 %
@@ -36,6 +29,8 @@ function [res] = doesblockexist(mdlName, blockAddress)
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
+
+function [res] = doesblockexist(mdlName, blockAddress)
  
 wasntLoaded = 0;
 if ~bdIsLoaded(mdlName)
