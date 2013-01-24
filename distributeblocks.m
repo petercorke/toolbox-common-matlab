@@ -1,24 +1,23 @@
-%DISTRIBUTEBLOCKS Equidistantly distributes blocks in a Simulink block library.
+%DISTRIBUTEBLOCKS Distribute blocks in Simulink block library
 %
-%  distributeBlocks( 'mdlName' )
-%  The string 'mdlName' holds the name of the Simulink model to work in.
+% distributeBlocks(MODEL) equidistantly distributes blocks in a Simulink 
+% block library named MODEL.
 %
 % Notes::
-% -The matlab functions to create Simulink blocks from symbolic
-%  expresssions actually place all blocks on top of each other. This
-%  function scans a simulink model and rearranges the blocks on an
-%  equidistantly spaced grid.
-% -The Simulink model must already be opened before running this
-%  function!
+% - The MATLAB functions to create Simulink blocks from symbolic
+%   expresssions actually place all blocks on top of each other. This
+%   function scans a simulink model and rearranges the blocks on an
+%   equidistantly spaced grid.
+% - The Simulink model must already be opened before running this
+%   function!
 %
-% Authors::
+% Author::
 %  Joern Malzahn   
-%  2012 RST, Technische Universitaet Dortmund, Germany
+%  2012 RST, Technische Universitaet Dortmund, Germany.
 %  http://www.rst.e-technik.tu-dortmund.de  
 %
-%  See also symexpr2slblock, doesblockexist.
+% See also symexpr2slblock, doesblockexist.
 
-% Copyright (C) 1993-2012, by Peter I. Corke
 % Copyright (C) 2012-2013, by Joern Malzahn
 %
 % This file is part of The Robotics Toolbox for Matlab (RTB).

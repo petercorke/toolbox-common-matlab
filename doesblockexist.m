@@ -1,17 +1,16 @@
-%DOESBLOCKEXIST Checks wether a Simulink block already exists in a Simulink model.
+%DOESBLOCKEXIST Check existence of block in Simulink model
 %
-% RES = doesblockexist(MDLNAME, BLOCKADDRESS) is true, if the block exists, false otherwise.
-% MDLNAME is the name of the Simulink model to work in.
-% BLOCKADRESS is the address of the Simulink block within the model.
+% RES = doesblockexist(MDLNAME, BLOCKADDRESS) is a logical result that 
+% indicates whether or not the block BLOCKADDRESS exists within the 
+% Simulink model MDLNAME.
 %
-% Authors::
+% Author::
 %  Joern Malzahn   
-%  2012 RST, Technische Universitaet Dortmund, Germany
+%  2012 RST, Technische Universitaet Dortmund, Germany.
 %  http://www.rst.e-technik.tu-dortmund.de  
 %
 % See also symexpr2slblock, distributeblocks.
 
-% Copyright (C) 1993-2012, by Peter I. Corke
 % Copyright (C) 2012-2013, by Joern Malzahn
 %
 % This file is part of The Robotics Toolbox for Matlab (RTB).

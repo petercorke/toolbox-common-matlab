@@ -1,34 +1,31 @@
-%MULTIDFPRINTF Print formatted text to multiple IDs.
+%MULTIDFPRINTF Print formatted text to multiple streams
 %
-% count = multidfprintf(IDVEC, FORMAT, A, ...) is the vector with the
-% number of bytes written to each target ID specified in the vector IDVEC.
-% FORMAT is the format string as used by sprintf and fprintf. 
-% A is the array of elements, to which the format will be applied similar
-% to sprintf and fprint.
+% COUNT = MULTIDFPRINTF(IDVEC, FORMAT, A, ...) performs formatted output
+% to multiple streams such as console and files.  FORMAT is the format string 
+% as used by sprintf and fprintf.  A is the array of elements, to which the 
+% format will be applied similar to sprintf and fprint.  
+%
+% IDVEC is a vector (1xN) of file descriptors and COUNT is a vector (1xN) of
+% the number of bytes written to each file.
 %
 % Notes::
-% Matlab ships with a function for writing formatted strings into a text
-% file or to the console (fprintf). The function works with single 
-% target identifiers (file, console, string). This function uses the 
-% same syntax as for the fprintf function, but also permits a vector of 
-% multiple target identifiers.
+% - To write to the consolde use the file identifier 1.
 %
 % Example::
-% % Create and open a new example file:
-% fid = fopen('exampleFile.txt','w+');
-% % Write something to the file and the console simultaneously:
-% multidfprintf([1 FID],'% s % d % d % d!\n','This is a test!',1,2,3);
-% % Close the file:
-% fclose(FID);
+%         % Create and open a new example file:
+%         fid = fopen('exampleFile.txt','w+');
+%         % Write something to the file and the console simultaneously:
+%         multidfprintf([1 FID],'% s % d % d % d!\n','This is a test!',1,2,3);
+%         % Close the file:
+%         fclose(FID);
 %
 % Authors::
 %  Joern Malzahn   
-%  2012 RST, Technische Universitaet Dortmund, Germany
+%  2012 RST, Technische Universitaet Dortmund, Germany.
 %  http://www.rst.e-technik.tu-dortmund.de
 %
 % See also fprintf,sprintf.
 
-% Copyright (C) 1993-2012, by Peter I. Corke
 % Copyright (C) 2012-2013, by Joern Malzahn
 %
 % This file is part of The Robotics Toolbox for Matlab (RTB).
