@@ -1,8 +1,8 @@
 %SIMULINKEXT Return file extension of Simulink block diagrams.
 %
 % str = simulinkext() is either
-% - '.mdl' if Simulink version number is less than  7.9
-% - '.slx' if Simulink version numberis larger or equal to 7.9
+% - '.mdl' if Simulink version number is less than  8
+% - '.slx' if Simulink version numberis larger or equal to 8
 %
 % Notes::
 % The file extension for simulink block diagrams has changed from Matlab 2011b to Matlab 2012a. 
@@ -40,7 +40,7 @@
 
 function str = simulinkext()
 
-if verLessThan('simulink','7.9')
+if verLessThan('simulink','8')
     str = '.mdl';
 else
     str = '.slx';
