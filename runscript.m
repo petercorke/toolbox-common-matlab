@@ -10,6 +10,7 @@
 % 'begin'      Start executing the file after the commnent line %%begin (default true)
 % 'dock'       Cause the figures to be docked when created
 % 'path',P     Look for the file FNAME in the folder P (default .)
+% 'dock'       Dock figures within GUI
 %
 % Notes::
 % - If not file extension is given in FNAME, .m is assumed.
@@ -50,9 +51,11 @@ function runscript(fname, varargin)
         
     close all
     
+    prevDockStatus = get(0,'DefaultFigureWindowStyle');
     if opt.dock
-        prevDockStatus = get(0,'DefaultFigureWindowStyle');
         set(0,'DefaultFigureWindowStyle','docked');
+    else
+        set(0,'DefaultFigureWindowStyle','normal');
     end
 
     
@@ -116,46 +119,61 @@ function runscript(fname, varargin)
                 % found a loop, don't eval it until we get to the end
                 loopText = strcat(loopText, [line ';']);
                 % display the line with a pretend MATLAB prompt
-                fprintf('>> '); disp(line)
+                if exist('cprintf')
+                    cprintf('blue', '>> %s\n', line)
+                else
+                    fprintf('>> '); disp(line)
+                end
                 continue;
             end
             
             if ~isempty(loopText)
                 % we're in stashing mode
                 loopText = strcat(loopText, line);
-                % display the line with a pretend MATLAB prompt
-                disp(line);
-                
+                % display the line 
+                if exist('cprintf')
+                    cprintf('blue', '%s\n', line)
+                else
+                    disp(line)
+                end                
                 % if the end of a loop, unstash the text and eval it
                 if strfind1(line, 'end') && ~isempty(loopText)
-                    loopText
                     evalin('base', loopText);
                     shouldPause = true;
                     loopText = [];
                     continue;
                 end
             else
-                            % display the line with a pretend MATLAB prompt
-            fprintf('>> '); disp(line)
+                % display the line with a pretend MATLAB prompt
+                if exist('cprintf')
+                    cprintf('blue', '>> %s\n', line)
+                else
+                    fprintf('>> '); disp(line)
+                end
                 evalin('base', line);
                 shouldPause = true;
             end
         end
     end
     fprintf('------ done --------\n');
-    if opt.dock
-        % restore the docking mode if we set it
-        set(0,'DefaultFigureWindowStyle', prevDockStatus)
-    end
+    % restore the docking mode if we set it
+    set(0,'DefaultFigureWindowStyle', prevDockStatus)
 end
 
 function scriptwait(opt)
     if isempty(opt.delay)
         %a = input('-', 's');
         prompt = 'continue?';
-        fprintf(prompt); pause;
-        for i=1:length(prompt)
-            fprintf('\b');
+        if exist('cprintf')
+            cprintf('red', prompt); pause;
+            for i=1:length(prompt)
+                cprintf('text', '\b');
+            end
+        else
+            fprintf(prompt); pause;
+            for i=1:length(prompt)
+                fprintf('\b');
+            end
         end
     else
         pause(opt.delay);
