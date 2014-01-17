@@ -94,7 +94,7 @@ opt.vars = {};
 % since handling cell inputs and extracting input variable names is
 % required.
 % Thus, scan varargin manually:
-if iseven(nargin)
+if mod(nargin,2)==0
     error('CodeGenerator:codefunctionstring:wrongArgumentList',...
         'Wrong number of elements in the argument list.');
 end
@@ -203,7 +203,8 @@ end
 funstr = char(funstr,sprintf('%s', ' ') ); % empty line
 
 %% Actual code
-eval([opt.outputName{1}, ' = f; codestr = ccode(',opt.outputName{1},');'])
+% use f.' here, because of column/row indexing in C
+eval([opt.outputName{1}, ' = f.''; codestr = ccode(',opt.outputName{1},');'])
 if isscalar(f)
     % in the case of scalar expressions the resulting ccode always
     % begins with '  t0'. Replace that with the desired name.
