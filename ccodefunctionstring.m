@@ -168,7 +168,7 @@ end
 % finalize prototype for use in function definition
 funstr = [funstr,sprintf('%s', ')')];
 funstr = [funstr,sprintf('%s', '{')];
-funstr = char(funstr,sprintf('%s', ' ') ); % empty line
+funstr = sprintf('%s\n%s',funstr,sprintf('%s', ' ') ); % empty line
 
 
 %% input paramter expansion
@@ -183,7 +183,9 @@ for iIn = 1:nIn
     if ~isscalar(tmpIn) && isvector(tmpIn)
         nEl = numel(tmpIn);
         for iEl = 1:nEl
-            funstr = char(funstr,sprintf('  double %s = %s[%u];', char(tmpIn(iEl)), tmpInName,iEl-1 ));
+            funstr = sprintf('%s\n%s',...
+                funstr,...
+                sprintf('  double %s = %s[%u];', char(tmpIn(iEl)), tmpInName,iEl-1 ));
         end
         
         % for matrices
@@ -192,7 +194,10 @@ for iIn = 1:nIn
         nCol = size(tmpIn,2);
         for iRow = 1:nRow
             for iCol = 1:nCol
-                funstr = char(funstr,sprintf('  double %s%u%u = %s[%u][%u];', char(tmpIn(iRow,iCol)), iRow, iCol, tmpInName{iIn},iRow-1,iCol-1 ));
+                
+                funstr = sprintf('%s\n%s',...
+                    funstr,...
+                    sprintf('  double %s%u%u = %s[%u][%u];', char(tmpIn(iRow,iCol)), iRow, iCol, tmpInName{iIn},iRow-1,iCol-1 ));
             end
         end
     end
@@ -200,7 +205,9 @@ for iIn = 1:nIn
     
 end
 
-funstr = char(funstr,sprintf('%s', ' ') ); % empty line
+funstr = sprintf('%s\n%s',...
+    funstr,...
+    sprintf('%s', ' ') );
 
 %% Actual code
 % use f.' here, because of column/row indexing in C
@@ -212,8 +219,12 @@ if isscalar(f)
     codestr = [opt.outputName{1}, codestr];
 end
 
-funstr = char(funstr,codestr );
 
+funstr = sprintf('%s\n%s',...
+    funstr,...
+    codestr );
 
-funstr = char(funstr,sprintf('%s', '}') );
-funstr = char(funstr,sprintf('%s', ' ') ); % empty line
+funstr = sprintf('%s\n%s',...
+    funstr,sprintf('%s', '}') );
+funstr = sprintf('%s\n%s',...
+    funstr,sprintf('%s', ' ') ); % empty line
