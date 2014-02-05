@@ -51,9 +51,7 @@
 %
 %
 % Author::
-%  Joern Malzahn
-%  2014 RST, Technische Universitaet Dortmund, Germany.
-%  http://www.rst.e-technik.tu-dortmund.de
+%  Joern Malzahn, (joern.malzahn@tu-dortmund.de)
 %
 % See also ccode, matlabFunction.
 
