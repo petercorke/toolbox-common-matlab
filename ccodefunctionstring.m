@@ -124,7 +124,8 @@ for iOut = 1:nOut
     tmpOut = opt.output{iOut};
     
     if ~isscalar(tmpOut);
-        funstr = [funstr, sprintf('double %s[][%u]', tmpOutName, size(tmpOut,2) ) ];
+%         funstr = [funstr, sprintf('double %s[][%u]', tmpOutName, size(tmpOut,2) ) ];
+        funstr = [funstr, sprintf('double %s[][%u]', tmpOutName, size(tmpOut,1) ) ];
     else
         funstr = [funstr, sprintf('double %s', tmpOutName ) ];
     end
@@ -209,7 +210,8 @@ funstr = sprintf('%s\n%s',...
 
 %% Actual code
 % use f.' here, because of column/row indexing in C
-eval([opt.outputName{1}, ' = f.''; codestr = ccode(',opt.outputName{1},');'])
+ eval([opt.outputName{1}, ' = f.''; codestr = ccode(',opt.outputName{1},');'])
+
 if isscalar(f)
     % in the case of scalar expressions the resulting ccode always
     % begins with '  t0'. Replace that with the desired name.
