@@ -9,7 +9,7 @@
 % depending on the number of inputs to the function as well as the
 % dimensionality of the inputs (n_i) and the output (n_o).
 % The whole C-code implementation is returned in FUNSTR, while HDRSTR
-% contains just the prototype ending with a semi-colon
+% contains just the signature ending with a semi-colon
 % (for the use in header files).
 %
 % The argumentlist ARGLIST may contain the following property-value pairs
@@ -29,6 +29,11 @@
 %    symbolic variables. The C-function prototype will be composed accoringly
 %    as exemplified above.
 %
+% - 'flag', true or false (default)
+%   Specifies if only the function signature shall be generated:
+%    false: generate complete function string including implementation
+%    body.
+%    true: generate function signature only.
 %
 % Example::
 % % Create symbolic variables
@@ -81,13 +86,13 @@ function [funstr hdrstr] = ccodefunctionstring(f,varargin)
 opt.funname = inputname(1);
 opt.output{1} = zeros(size(f));
 opt.outputName{1} = inputname(1);
+opt.flag = 0;
 
 if isempty(opt.outputName{1})
     opt.outputName{1} = 'myout';
 end
-
 opt.vars = {};
-% opt.varsName = {};
+
 % tb_optparse is not applicable here,
 % since handling cell inputs and extracting input variable names is
 % required.
@@ -106,6 +111,8 @@ for iArg = 1:2:nargin-1
             end
         case 'vars'
             opt.vars = varargin{iArg+1};
+        case 'flag'
+            opt.flag = varargin{iArg+1};
         otherwise
             error('ccodefunctionstring:unknownArgument',...
                 ['Argument ',inputname(iArg),' unknown.']);
@@ -115,7 +122,7 @@ end
 nOut = numel(opt.output);
 nIn = numel(opt.vars);
 
-%% function prototype
+%% function signature
 funstr = sprintf('void %s(', opt.funname);
 
 % outputs
@@ -124,7 +131,6 @@ for iOut = 1:nOut
     tmpOut = opt.output{iOut};
     
     if ~isscalar(tmpOut);
-%         funstr = [funstr, sprintf('double %s[][%u]', tmpOutName, size(tmpOut,2) ) ];
         funstr = [funstr, sprintf('double %s[][%u]', tmpOutName, size(tmpOut,1) ) ];
     else
         funstr = [funstr, sprintf('double %s', tmpOutName ) ];
@@ -159,13 +165,16 @@ for iIn = 1:nIn
     end
     
 end
+funstr = [funstr,sprintf('%s', ')')];
 
 % finalize prototype for use in header files
 if nargout > 1
-    hdrstr = [funstr,sprintf('%s', ');')];
+    hdrstr = [funstr,sprintf('%s', ';')];
+elseif opt.flag  
+    return;         %% STOP IF FLAG == TRUE
 end
-% finalize prototype for use in function definition
-funstr = [funstr,sprintf('%s', ')')];
+
+% finalize signature for use in function definition
 funstr = [funstr,sprintf('%s', '{')];
 funstr = sprintf('%s\n%s',funstr,sprintf('%s', ' ') ); % empty line
 
@@ -218,7 +227,6 @@ if isscalar(f)
     codestr(1:4) = [];
     codestr = [opt.outputName{1}, codestr];
 end
-
 
 funstr = sprintf('%s\n%s',...
     funstr,...
