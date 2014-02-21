@@ -1,23 +1,23 @@
-%CCODEFUNCTIONSTRING Converts a symbolic expression into a c-code function
+%CCODEFUNCTIONSTRING Converts a symbolic expression into a C-code function
 %
 % [FUNSTR, HDRSTR] = CCODEFUNCTIONSTRING(SYMEXPR, ARGLIST) returns a string
-% representing a C-code implementation of a symbolic expression.
-% The C-code implementation has a prototype similar to the form:
+% representing a C-code implementation of a symbolic expression SYMEXPR.
+% The C-code implementation has a signature of the form:
 %
 % void funname(double[][n_o] out, const double in1, const double* in2, const double[][n_i] in3);
 %
 % depending on the number of inputs to the function as well as the
 % dimensionality of the inputs (n_i) and the output (n_o).
 % The whole C-code implementation is returned in FUNSTR, while HDRSTR
-% contains just the signature ending with a semi-colon
-% (for the use in header files).
+% contains just the signature ending with a semi-colon (for the use in 
+% header files).
 %
 % The argumentlist ARGLIST may contain the following property-value pairs
 %   PROPERTY, VALUE
 % - 'funname', 'name_string'
 %   'name_string' is the actual identifier of the obtained C-function. If
 %   this optional argument is omitted, the variable name of the first input
-%   argument is used.
+%   argument is used, if possible.
 %
 % - 'output', 'output_name'
 %   Defines the identifier of the output variable in the C-function.
@@ -52,8 +52,6 @@
 %   dimensionality of inputs and outputs with respect to your symbolic
 %   expression on your own. Otherwise the generated C-function may not
 %   compile as desired.
-%
-%
 %
 % Author::
 %  Joern Malzahn, (joern.malzahn@tu-dortmund.de)
@@ -122,7 +120,7 @@ end
 nOut = numel(opt.output);
 nIn = numel(opt.vars);
 
-%% function signature
+%% Function signature
 funstr = sprintf('void %s(', opt.funname);
 
 % outputs
@@ -167,10 +165,11 @@ for iIn = 1:nIn
 end
 funstr = [funstr,sprintf('%s', ')')];
 
-% finalize prototype for use in header files
+% finalize signature for the use in header files
 if nargout > 1
     hdrstr = [funstr,sprintf('%s', ';')];
-elseif opt.flag  
+end
+if opt.flag
     return;         %% STOP IF FLAG == TRUE
 end
 
@@ -178,8 +177,8 @@ end
 funstr = [funstr,sprintf('%s', '{')];
 funstr = sprintf('%s\n%s',funstr,sprintf('%s', ' ') ); % empty line
 
-
-%% input paramter expansion
+%% Function body
+% input paramter expansion
 for iIn = 1:nIn
     tmpInName = ['input',num2str(iIn)];%opt.varsName{iIn};
     tmpIn = opt.vars{iIn};
@@ -217,7 +216,7 @@ funstr = sprintf('%s\n%s',...
     funstr,...
     sprintf('%s', ' ') );
 
-%% Actual code
+% Actual code
 % use f.' here, because of column/row indexing in C
  eval([opt.outputName{1}, ' = f.''; codestr = ccode(',opt.outputName{1},');'])
 
