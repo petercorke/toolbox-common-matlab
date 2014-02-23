@@ -77,12 +77,20 @@ function runscript(fname, varargin)
         running = true;
     end
     
+    lineNum = 1;
+    
+    % stashMode
+    %  0 normal
+    %  1 loop
+    %  2 continuation
+    stashMode = 0;
     while 1
         % get the next line from the file, bail if EOF
         line = fgetl(fp);
         if line == -1
             break
         end
+        lineNum = lineNum+1;
         
         % logic to skip lines until we see one beginning with %%begin
         if ~running
@@ -101,7 +109,7 @@ function runscript(fname, varargin)
                 scriptwait(opt);
                 shouldPause = false;
             end
-        elseif strfind1(strtrim(line), '%')
+        elseif startswith(strtrim(line), '%')
             % line was a comment
             disp(line)
             pause(opt.cdelay)
@@ -115,9 +123,23 @@ function runscript(fname, varargin)
             end
             
             % if the start of a loop, stash the text for now
-            if strfind1(line, 'for') || strfind1(line, 'while')
+            if startswith(line, 'for') || startswith(line, 'while')
                 % found a loop, don't eval it until we get to the end
                 loopText = strcat(loopText, [line ';']);
+                stashMode = 1;
+                % display the line with a pretend MATLAB prompt
+                if exist('cprintf')
+                    cprintf('blue', '>> %s\n', line)
+                else
+                    fprintf('>> '); disp(line)
+                end
+                continue;
+            end
+            % if the statement has a continuation
+            if endswith(line, '...')
+                % found a loop, don't eval it until we get to the end
+                loopText = strcat(loopText, [line(end-2:end) ' ']);
+                stashMode = 2;
                 % display the line with a pretend MATLAB prompt
                 if exist('cprintf')
                     cprintf('blue', '>> %s\n', line)
@@ -127,9 +149,14 @@ function runscript(fname, varargin)
                 continue;
             end
             
-            if ~isempty(loopText)
+            if stashMode > 0
                 % we're in stashing mode
-                loopText = strcat(loopText, line);
+                if stashMode == 1
+                    loopText = strcat(loopText, line);
+                else
+                    loopText = strcat(loopText, line(end-2:end));
+                end
+                
                 % display the line 
                 if exist('cprintf')
                     cprintf('blue', '%s\n', line)
@@ -137,7 +164,8 @@ function runscript(fname, varargin)
                     disp(line)
                 end                
                 % if the end of a loop, unstash the text and eval it
-                if strfind1(line, 'end') && ~isempty(loopText)
+                if startswith(line, 'end') && ~isempty(loopText)
+                    loopText
                     evalin('base', loopText);
                     shouldPause = true;
                     loopText = [];
@@ -150,7 +178,11 @@ function runscript(fname, varargin)
                 else
                     fprintf('>> '); disp(line)
                 end
-                evalin('base', line);
+                try
+                    evalin('base', line);
+                catch m
+                    error('error in script %s at line %d', fname, lineNum);
+                end
                 shouldPause = true;
             end
         end
@@ -181,12 +213,24 @@ function scriptwait(opt)
 end
 
 % test if s2 is at the start of s1
-function res = strfind1(s1, s2)
+function res = startswith(s1, s2)
 
     r = strfind(s1, s2);
     res = false;
     if ~isempty(r) && (r(1) == 1)
         res = true;
     end
+end
+
+% test if s2 is at the start of s1
+function res = endswith(s1, s2)
+
+    if length(s1) < length(s2)
+        res = false;
+    else
+        n2 = length(s2)-1;
+        res = strcmp(s1(end-n2:end), s2);
+    end
+
 end
     
