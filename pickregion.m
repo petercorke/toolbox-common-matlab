@@ -54,9 +54,11 @@ function [p1,p2]=pickregion(varargin)
     udata.lh2=lh2;
     
     % Set handlers for mouse up and mouse motion
-    set(gcf,'UserData',udata, ...
-        'WindowButtonMotionFcn','wbmf', ...
-        'WindowButtonUp', 'wbup', ...
+    udata.wbupOld = get(gcf, 'WindowButtonUp');
+    udata.wbmfOld = get(gcf, 'WindowButtonMotionFcn');
+    set(gcf, ...
+        'WindowButtonMotionFcn', @(src,event) wbmf(src,udata), ...
+        'WindowButtonUp', @(src,event) wbup(src,udata), ...
         'DoubleBuffer','on');
 
     % Wait until the lines have been destroyed
@@ -70,8 +72,7 @@ function [p1,p2]=pickregion(varargin)
     set(gcf,'UserData',cudata,'DoubleBuffer','off');
 end
 
-function wbmf %window motion callback function
-    ud = get(gcf,'UserData');
+function wbmf(src, ud) %window motion callback function
     
     % get current coordinates
     P = get(ud.h,'CurrentPoint');
@@ -87,12 +88,13 @@ function wbmf %window motion callback function
 
 end
 
-function wbup
+function wbup(src, ud)
     % remove motion handler
-    set(gcf, 'WindowButtonMotionFcn','');
+    set(gcf, 'WindowButtonMotionFcn', ud.wbmfOld);
+    set(gcf, 'WindowButtonUpFcn', ud.wbupOld);
+    
     
     % delete the lines
-    ud=get(gcf,'UserData');
     delete(ud.lh2);
     delete(ud.lh1);
 end
