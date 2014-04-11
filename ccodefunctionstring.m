@@ -122,6 +122,7 @@ nIn = numel(opt.vars);
 
 %% Function signature
 funstr = sprintf('void %s(', opt.funname);
+initstr = '';
 
 % outputs
 for iOut = 1:nOut
@@ -130,6 +131,11 @@ for iOut = 1:nOut
     
     if ~isscalar(tmpOut);
         funstr = [funstr, sprintf('double %s[][%u]', tmpOutName, size(tmpOut,1) ) ];
+        for iRow = 1:size(tmpOut,1)
+            for iCol = 1:size(tmpOut,2)
+                initstr = sprintf(' %s %s[%u][%u]=0;\n',initstr,tmpOutName,iCol-1,iRow-1);
+            end
+        end
     else
         funstr = [funstr, sprintf('double %s', tmpOutName ) ];
     end
@@ -214,6 +220,9 @@ end
 funstr = sprintf('%s\n%s',...
     funstr,...
     sprintf('%s', ' ') );
+funstr = sprintf('%s\n%s',...
+    funstr,...
+    sprintf('%s\n\n', initstr) );
 
 % Actual code
 % use f.' here, because of column/row indexing in C
