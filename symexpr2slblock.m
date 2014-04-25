@@ -49,6 +49,40 @@ function [] = symexpr2slblock(varargin)
 % V5.8 (R2012a)
 if verLessThan('symbolic','5.7')                                   
     emlBlock(varargin{:});
-else
+elseif verLessThan('symbolic','5.11')
     matlabFunctionBlock(varargin{:});
+else
+    % Work around a bug in matlabFunctionBlock.m
+    
+    %% Read orignal file
+	fid = fopen(which('matlabFunctionBlock.m'),'r');
+    funStr = fscanf(fid, '%c',inf);
+    fclose(fid);
+    
+    %% Create Temporary Workaround File
+    tmpFName = fullfile(pwd,'tmp_workaround_matlabFunctionBlock.m');
+    
+    % perform necessary modifications
+    funStr = strrep(funStr,...
+        'if isa(b,''Stateflow.EMChart'')',...   Buggy expression to be replaced
+        'if ~strcmp(class(b),''Stateflow.EMChart'')'); % Working expression from previous version.
+    funStr = strrep(funStr,...
+        'matlabFunctionBlock',...   Buggy expression to be replaced
+        'tmp_workaround_matlabFunctionBlock'); % Working expression from previous version.
+    
+    % write modified function to temporary file
+    fid = fopen(tmpFName, 'w');
+    fprintf(fid,'%s\n','% This is a temporary file used as workaround for a bug in matlabFunctionBlock.m (R2013b).');
+    fprintf(fid,'%s\n','% It should have been deleted automatically by the Robotics Toolbox. If not, feel free to do it manually.');
+    fprintf(fid,'%s',funStr);
+    fclose(fid);
+
+    % update function database
+    rehash
+    
+    % perform the actual block generation
+    tmp_workaround_matlabFunctionBlock(varargin{:});
+    
+    % clean up
+    delete(tmpFName);
 end
