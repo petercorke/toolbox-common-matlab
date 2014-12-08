@@ -12,9 +12,7 @@
 %   function!
 %
 % Author::
-%  Joern Malzahn   
-%  2012 RST, Technische Universitaet Dortmund, Germany.
-%  http://www.rst.e-technik.tu-dortmund.de  
+%  Joern Malzahn, (joern.malzahn@tu-dortmund.de) 
 %
 % See also symexpr2slblock, doesblockexist.
 

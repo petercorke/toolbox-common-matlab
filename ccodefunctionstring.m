@@ -1,6 +1,6 @@
 %CCODEFUNCTIONSTRING Converts a symbolic expression into a C-code function
 %
-% [FUNSTR, HDRSTR] = CCODEFUNCTIONSTRING(SYMEXPR, ARGLIST) returns a string
+% [FUNSTR, HDRSTR] = ccodefunctionstring(SYMEXPR, ARGLIST) returns a string
 % representing a C-code implementation of a symbolic expression SYMEXPR.
 % The C-code implementation has a signature of the form:
 %
