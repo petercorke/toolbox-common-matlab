@@ -27,22 +27,25 @@
 % - Tristimulus values are in the range 0 to 1
 
 
-% Copyright (C) 1993-2011, by Peter I. Corke
+
+% Copyright (C) 1993-2014, by Peter I. Corke
 %
-% This file is part of The Machine Vision Toolbox for Matlab (MVTB).
+% This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
-% MVTB is free software: you can redistribute it and/or modify
+% RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
 % 
-% MVTB is distributed in the hope that it will be useful,
+% RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
 % 
 % You should have received a copy of the GNU Leser General Public License
-% along with MVTB.  If not, see <http://www.gnu.org/licenses/>.
+% along with RTB.  If not, see <http://www.gnu.org/licenses/>.
+%
+% http://www.petercorke.com
 
 function r = colorname(a, varargin)
 
@@ -51,8 +54,10 @@ function r = colorname(a, varargin)
 
     persistent  rgbtable;
     
+    mvtb_present = exist('tristim2cc');
+    
     % ensure that the database is loaded
-    if isempty(rgbtable),
+    if isempty(rgbtable)
         % load mapping table from file
         fprintf('loading rgb.txt\n');
         f = fopen('private/rgb.txt', 'r');
@@ -60,24 +65,28 @@ function r = colorname(a, varargin)
         rgb = [];
         names = {};
         xy = [];
-
-        while ~feof(f),       
+        
+        while ~feof(f),
             line = fgets(f);
             if line(1) == '#',
                 continue;
             end
-
+            
             [A,count,errm,next] = sscanf(line, '%d %d %d');
-            if count == 3,
+            if count == 3
                 k = k + 1;
                 rgb(k,:) = A' / 255.0;
                 names{k} = lower( strtrim(line(next:end)) );
-                xy = tristim2cc( colorspace('RGB->XYZ', rgb) );
+                if mvtb_present
+                    xy = tristim2cc( colorspace('RGB->XYZ', rgb) );
+                end
             end
         end
         s.rgb = rgb;
         s.names = names;
-        s.xy = xy;
+        if mvtb_present
+            s.xy = xy;
+        end
         rgbtable = s;
     end
     
