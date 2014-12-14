@@ -4,7 +4,8 @@
 % representing a C-code implementation of a symbolic expression SYMEXPR.
 % The C-code implementation has a signature of the form:
 %
-% void funname(double[][n_o] out, const double in1, const double* in2, const double[][n_i] in3);
+%         void funname(double[][n_o] out, const double in1, 
+%           const double* in2, const double[][n_i] in3);
 %
 % depending on the number of inputs to the function as well as the
 % dimensionality of the inputs (n_i) and the output (n_o).
@@ -12,39 +13,28 @@
 % contains just the signature ending with a semi-colon (for the use in 
 % header files).
 %
-% The argumentlist ARGLIST may contain the following property-value pairs
-%   PROPERTY, VALUE
-% - 'funname', 'name_string'
-%   'name_string' is the actual identifier of the obtained C-function. If
-%   this optional argument is omitted, the variable name of the first input
-%   argument is used, if possible.
-%
-% - 'output', 'output_name'
-%   Defines the identifier of the output variable in the C-function.
-%
-% - 'vars', {symVar1, symVar2,...}
-%    The inputs to the C-code function must be defined as a cell array. The
-%    elements of this cell array contain the symbolic variables required to
-%    compute the output. The elements may be scalars, vectors or matrices
-%    symbolic variables. The C-function prototype will be composed accoringly
-%    as exemplified above.
-%
-% - 'flag', true or false (default)
-%   Specifies if only the function signature shall be generated:
-%    false: generate complete function string including implementation
-%    body.
-%    true: generate function signature only.
+% Options::
+% 'funname',name    Specify the name of the generated C-function. If
+%                   this optional argument is omitted, the variable name 
+%                   of the first input argument is used, if possible.
+% 'output',outVar   Defines the identifier of the output variable in the C-function.
+% 'vars',varCells   The inputs to the C-code function must be defined as a cell array. The
+%                   elements of this cell array contain the symbolic variables required to
+%                   compute the output. The elements may be scalars, vectors or matrices
+%                   symbolic variables. The C-function prototype will be composed accoringly
+%                   as exemplified above.
+% 'flag',sig        Specifies if function signature only is generated, default (false).
 %
 % Example::
-% % Create symbolic variables
-% syms q1 q2 q3
+%          % Create symbolic variables
+%          syms q1 q2 q3
 %
-% Q = [q1 q2 q3];
-% % Create symbolic expression
-% myrot = rotz(q3)*roty(q2)*rotx(q1)
+%          Q = [q1 q2 q3];
+%          % Create symbolic expression
+%          myrot = rotz(q3)*roty(q2)*rotx(q1)
 %
-% % Generate C-function string
-% [funstr, hdrstr] = ccodefunctionstring(myrot,'output','foo','vars',{Q},'funname','rotate_xyz')
+%          % Generate C-function string
+%          [funstr, hdrstr] = ccodefunctionstring(myrot,'output','foo','vars',{Q},'funname','rotate_xyz')
 %
 % Notes::
 % - The function wraps around the built-in Matlab function 'ccode'. It does

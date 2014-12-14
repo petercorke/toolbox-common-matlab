@@ -17,12 +17,15 @@
 % - If the executable statement has comments immediately afterward (no blank lines)
 %   then the pause occurs after those comments are displayed.
 % - A simple '-' prompt indicates when the script is paused, hit enter.
+% - If the function cprintf() is in your path, the display is more
+%   colorful, you can get this file from MATLAB Central.
 %
 % See also eval.
 
-% Copyright (C) 1993-2013, by Peter I. Corke
+
+% Copyright (C) 1993-2014, by Peter I. Corke
 %
-% This file is part of The Robotics Toolbox for Matlab (RTB).
+% This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
