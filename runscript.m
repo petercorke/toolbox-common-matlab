@@ -168,7 +168,6 @@ function runscript(fname, varargin)
                 end                
                 % if the end of a loop, unstash the text and eval it
                 if startswith(line, 'end') && ~isempty(loopText)
-                    loopText
                     evalin('base', loopText);
                     shouldPause = true;
                     loopText = [];
@@ -184,7 +183,8 @@ function runscript(fname, varargin)
                 try
                     evalin('base', line);
                 catch m
-                    error('error in script %s at line %d', fname, lineNum);
+                    %error('error in script %s at line %d', fname, lineNum);
+                    m.rethrow();
                 end
                 shouldPause = true;
             end
