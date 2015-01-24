@@ -1,23 +1,27 @@
 %EDGELIST Return list of edge pixels for region
 %
-% E = EDGELIST(IM, SEED) is a list of edge pixels of a region in the
-% image IM starting at edge coordinate SEED (i,j).  The result E is a matrix,
-% each row is one edge point coordinate (x,y).  
+% EG = EDGELIST(IM, SEED) is a list of edge pixels (Nx2) of a region in the
+% image IM starting at edge coordinate SEED=[X,Y].  The edgelist has one row per
+% edge point coordinate (x,y).  
 %
-% E = EDGELIST(IM, SEED, DIRECTION) is a list of edge pixels as above,
-% but the direction of edge following is specified.  DIRECTION == 0 (default)
-% means clockwise, non zero is counter-clockwise.  Note that direction is 
-% with respect to y-axis upward, in matrix coordinate frame, not image frame.
+% EG = EDGELIST(IM, SEED, DIRECTION) as above, but the direction of edge
+% following is specified.  DIRECTION == 0 (default) means clockwise, non
+% zero is counter-clockwise.  Note that direction is with respect to y-axis
+% upward, in matrix coordinate frame, not image frame.
 %
-% [E,D] = EDGELIST(IM, SEED, DIRECTION) as above but also returns a vector
+% [EG,D] = EDGELIST(IM, SEED, DIRECTION) as above but also returns a vector
 % of edge segment directions which have values 1 to 8 representing W SW S SE E
 % NW N NW respectively.
 %
 % Notes::
+% - Coordinates are given assuming the matrix is an image, so the indices are
+%   always in the form (x,y) or (column,row).
 % - IM is a binary image where 0 is assumed to be background, non-zero 
 %   is an object.
 % - SEED must be a point on the edge of the region.
 % - The seed point is always the first element of the returned edgelist.
+% - 8-direction chain coding can give incorrect results when used with
+%   blobs founds using 4-way connectivty.
 %
 % Reference::
 % - METHODS TO ESTIMATE AREAS AND PERIMETERS OF BLOB-LIKE OBJECTS: A COMPARISON

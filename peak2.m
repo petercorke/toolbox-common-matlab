@@ -14,9 +14,12 @@
 % 'plot'        Display the interpolation polynomial overlaid on the point data
 %
 % Notes::
+% - A maxima is defined as an element that larger than its eight neighbours.
+%   Edges elements will never be returned as maxima.
 % - To find minima, use PEAK2(-V).
 % - The interp options fits points in the neighbourhood about the peak with
-%   a paraboloid and its peak position is returned.
+%   a paraboloid and its peak position is returned.  In this case IJ will 
+%   be non-integer.
 %
 % See also PEAK, SUB2IND.
 

@@ -1,7 +1,14 @@
-%DIFF2 Two point difference
+%DIFF2 First-order difference
 %
-% D = DIFF2(V) is the 2-point difference for each point in the vector v
-% and the first element is zero.  The vector D has the same length as V.
+% D = DIFF2(V) is the first-order difference (1xN) of the series data in 
+% vector V (1xN) and the first element is zero.
+%
+% D = DIFF2(A) is the first-order difference (MxN) of the series data in 
+% each row of the matrix A (MxN) and the first element in each row is zero.
+%
+% Notes::
+% - Unlike the builtin function DIFF, the result of DIFF2 has the same
+%   number of columns as the input.
 %
 % See also DIFF.
 

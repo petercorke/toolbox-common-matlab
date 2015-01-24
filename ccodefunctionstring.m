@@ -34,7 +34,8 @@
 %          myrot = rotz(q3)*roty(q2)*rotx(q1)
 %
 %          % Generate C-function string
-%          [funstr, hdrstr] = ccodefunctionstring(myrot,'output','foo','vars',{Q},'funname','rotate_xyz')
+%          [funstr, hdrstr] = ccodefunctionstring(myrot,'output','foo', ...
+%          'vars',{Q},'funname','rotate_xyz')
 %
 % Notes::
 % - The function wraps around the built-in Matlab function 'ccode'. It does

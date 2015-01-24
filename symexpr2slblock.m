@@ -1,7 +1,7 @@
 %SYMEXPR2SLBLOCK Create symbolic embedded MATLAB Function block
 %
 % symexpr2slblock(VARARGIN) creates an Embedded MATLAB Function block 
-% from a symbolic expression.% The input arguments are just as used with 
+% from a symbolic expression. The input arguments are just as used with 
 % the functions emlBlock or matlabFunctionBlock.
 %
 % Notes::

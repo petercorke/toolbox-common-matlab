@@ -5,7 +5,7 @@
 % - '.slx' if Simulink version numberis larger or equal to 8
 %
 % Notes::
-% The file extension for simulink block diagrams has changed from Matlab 2011b to Matlab 2012a. 
+% The file extension for Simulink block diagrams has changed from Matlab 2011b to Matlab 2012a. 
 % This function is used for backwards compatibility.
 %
 % Author::

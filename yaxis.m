@@ -1,9 +1,14 @@
 %YAYIS	set Y-axis scaling
 %
-%	YAYIS(max)
-%	YAYIS(min, max)
+% YAXIS(MAX) set y-axis scaling from 0 to MAX.
 %
-%	YAXIS	restore automatic scaling for this axis
+% YAXIS(MIN, MAX) set y-axis scaling from MIN to MAX.
+%
+% YAXIS([MIN MAX]) as above.
+%
+% YAXIS restore automatic scaling for y-axis.
+%
+% See also YAXIS.
 
 % Copyright (C) 1993-2014, by Peter I. Corke
 %

@@ -7,18 +7,21 @@
 % Options::
 % 'delay',D    Don't wait for keypress, just delay of D seconds (default 0)
 % 'cdelay',D   Pause of D seconds after each comment line (default 0)
-% 'begin'      Start executing the file after the commnent line %%begin (default true)
+% 'begin'      Start executing the file after the comment line %%begin (default false)
 % 'dock'       Cause the figures to be docked when created
 % 'path',P     Look for the file FNAME in the folder P (default .)
 % 'dock'       Dock figures within GUI
 %
 % Notes::
-% - If not file extension is given in FNAME, .m is assumed.
+% - If no file extension is given in FNAME, .m is assumed.
 % - If the executable statement has comments immediately afterward (no blank lines)
 %   then the pause occurs after those comments are displayed.
 % - A simple '-' prompt indicates when the script is paused, hit enter.
 % - If the function cprintf() is in your path, the display is more
 %   colorful, you can get this file from MATLAB Central.
+% - If the file has a lot of boilerplate, you can skip over and not display
+%   it by giving the 'begin' option which searchers for the first line
+%   starting with %%begin and commences execution at the line after that.
 %
 % See also eval.
 
@@ -46,7 +49,7 @@ function runscript(fname, varargin)
     
     opt.path = [];
     opt.delay = [];
-    opt.begin = true;
+    opt.begin = false;
     opt.cdelay = 0;
     opt.dock = false;
     
@@ -75,8 +78,9 @@ function runscript(fname, varargin)
     
     running = false;
     shouldPause = false;
-    loopText = [];
-        if ~opt.begin
+    savedText = [];
+    
+    if ~opt.begin
         running = true;
     end
     
@@ -86,7 +90,9 @@ function runscript(fname, varargin)
     %  0 normal
     %  1 loop
     %  2 continuation
-    stashMode = 0;
+    continMode = false;
+    compoundDepth = 0;
+    
     while 1
         % get the next line from the file, bail if EOF
         line = fgetl(fp);
@@ -99,95 +105,86 @@ function runscript(fname, varargin)
         if ~running
             if strcmp(line, '%%begin')
                 running = true;
+            else
+                continue;
             end
-            continue;
         end;
         
-
-        % display the line and if executable execute it
         if length(strtrim(line)) == 0
-            % line was blank
-            fprintf(' \n');
+            % blank line
+            fprintf('\n');
             if shouldPause
                 scriptwait(opt);
                 shouldPause = false;
             end
+            continue
         elseif startswith(strtrim(line), '%')
             % line was a comment
             disp(line)
-            pause(opt.cdelay)
-            
+            pause(opt.cdelay)  % optional comment delay
+            continue;
         else
-            % line is executable
             if shouldPause
                 scriptwait(opt);
-                
                 shouldPause = false;
             end
+        end
+        
+        % if the start of a loop, stash the text for now
+        if startswith(line, 'for') || startswith(line, 'while') || startswith(line, 'if')
+            % found a compound block, don't eval it until we get to the end
+            compoundDepth = compoundDepth + 1;
+        end
+        % if the statement has a continuation
+        if endswith(line, '...')  && compoundDepth == 0
+            % found a compound statement, don't eval it until we get to the end
+            continMode = true;
+        end
+        
+        if compoundDepth == 0 && ~continMode
+            prompt = '>> ';
+        else
+            prompt = '';
+        end
+        
+        % display the line with a pretend MATLAB prompt
+        if exist('cprintf')
+            cprintf('blue', '%s%s\n', prompt, line)
+        else
+            fprintf('%s', prompt); disp(line)
+        end
+        
+        if compoundDepth > 0 || continMode
+            % we're in stashing mode
+            savedText = strcat(savedText, '\n', line);
+        end
+        
+        if compoundDepth > 0 && startswith(line, 'end')
+            % the compound block is fully unnested
             
-            % if the start of a loop, stash the text for now
-            if startswith(line, 'for') || startswith(line, 'while')
-                % found a loop, don't eval it until we get to the end
-                loopText = strcat(loopText, [line ';']);
-                stashMode = 1;
-                % display the line with a pretend MATLAB prompt
-                if exist('cprintf')
-                    cprintf('blue', '>> %s\n', line)
-                else
-                    fprintf('>> '); disp(line)
-                end
-                continue;
-            end
-            % if the statement has a continuation
-            if endswith(line, '...')
-                % found a loop, don't eval it until we get to the end
-                loopText = strcat(loopText, [line(end-2:end) ' ']);
-                stashMode = 2;
-                % display the line with a pretend MATLAB prompt
-                if exist('cprintf')
-                    cprintf('blue', '>> %s\n', line)
-                else
-                    fprintf('>> '); disp(line)
-                end
-                continue;
-            end
-            
-            if stashMode > 0
-                % we're in stashing mode
-                if stashMode == 1
-                    loopText = strcat(loopText, line);
-                else
-                    loopText = strcat(loopText, line(end-2:end));
-                end
-                
-                % display the line 
-                if exist('cprintf')
-                    cprintf('blue', '%s\n', line)
-                else
-                    disp(line)
-                end                
-                % if the end of a loop, unstash the text and eval it
-                if startswith(line, 'end') && ~isempty(loopText)
-                    evalin('base', loopText);
-                    shouldPause = true;
-                    loopText = [];
-                    continue;
-                end
-            else
-                % display the line with a pretend MATLAB prompt
-                if exist('cprintf')
-                    cprintf('blue', '>> %s\n', line)
-                else
-                    fprintf('>> '); disp(line)
-                end
-                try
-                    evalin('base', line);
-                catch m
-                    %error('error in script %s at line %d', fname, lineNum);
-                    m.rethrow();
-                end
+            compoundDepth = compoundDepth - 1;
+            if compoundDepth == 0
+                evalSavedText(savedText, lineNum);
+                savedText = '';
                 shouldPause = true;
             end
+            continue
+            
+        elseif continMode && ~endswith(line, '...')
+            % no longer in continuation mode
+            
+            evalSavedText(savedText, lineNum);
+            savedText = '';
+            continMode = false;
+            shouldPause = true;
+            continue
+        end
+        
+        if compoundDepth == 0 && ~continMode
+            % it's a simple executable statement, execute it
+            fprintf(' \n');
+            evalSavedText(line, lineNum);
+            shouldPause = true;
         end
     end
     fprintf('------ done --------\n');
@@ -195,6 +192,22 @@ function runscript(fname, varargin)
     set(0,'DefaultFigureWindowStyle', prevDockStatus)
 end
 
+    function evalSavedText(text, lineNum)
+        if length(strtrim(text)) == 0
+            return
+        end
+        
+        text = sprintf(text);
+        
+        try
+            evalin('base', text);
+        catch m
+            fprintf('error in script %s at line %d', lineNum);
+            m.rethrow();
+        end
+    end
+
+% delay or prompt according to passed options
 function scriptwait(opt)
     if isempty(opt.delay)
         %a = input('-', 's');
@@ -215,9 +228,10 @@ function scriptwait(opt)
     end
 end
 
-% test if s2 is at the start of s1
+% test if s2 is at the start of s1 (ignoring leading spaces)
 function res = startswith(s1, s2)
 
+    s1 = strtrim(s1);  % trim leading white space
     r = strfind(s1, s2);
     res = false;
     if ~isempty(r) && (r(1) == 1)
@@ -225,7 +239,7 @@ function res = startswith(s1, s2)
     end
 end
 
-% test if s2 is at the start of s1
+% test if s2 is at the end of s1
 function res = endswith(s1, s2)
 
     if length(s1) < length(s2)

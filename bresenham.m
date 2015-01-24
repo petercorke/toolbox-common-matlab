@@ -1,10 +1,12 @@
 %BRESENHAM Generate a line
 %
-% P = BRESENHAM(X1, Y1, X2, Y2) is a list of integer coordinates for 
-% points lying on the line segement (X1,Y1) to (X2,Y2).  Endpoints 
-% must be integer.
+% P = BRESENHAM(X1, Y1, X2, Y2) is a list of integer coordinates (2xN) for 
+% points lying on the line segement (X1,Y1) to (X2,Y2).
 %
 % P = BRESENHAM(P1, P2) as above but P1=[X1,Y1] and P2=[X2,Y2].
+%
+% Notes::
+% - Endpoints must be integer values.
 %
 % See also ICANVAS.
 

@@ -1,7 +1,9 @@
-% POLYDIFF       pd = polydiff(p)
+%POLYDIFF Differentiate a polynomial
 %
-%   Return the coefficients of the derivative of polynomial p
+% PD = POLYDIFF(P) is a vector of coefficients of a polynomial (1xN-1) which is the
+% derivative of the polynomial P (1xN).
 %
+% See also POLYVAL.
 
 % Copyright (C) 1993-2014, by Peter I. Corke
 %

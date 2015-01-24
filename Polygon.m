@@ -28,7 +28,7 @@
 %
 % Acknowledgement::
 %
-% The methods inside, intersection, difference, union, and xor are based on code
+% The methods: inside, intersection, difference, union, and xor are based on code
 % written by:
 %  Kirill K. Pankratov, kirill@plume.mit.edu,
 %  http://puddle.mit.edu/~glenn/kirill/saga.html
@@ -57,6 +57,7 @@
 % TODO
 %  split the code in two.  Simple polygon functions in Polgon class, subclass with
 %  Pankratov code to Polygon2.
+%  add method to detect empty polygon, overload isempty
 
 classdef Polygon < handle
     
@@ -165,11 +166,14 @@ classdef Polygon < handle
         end
         
         function plot(plist, varargin)
-            %Polygon.plot Plot polygon
+            %Polygon.plot Draw polygon
             %
-            % P.plot() plot the polygon.
+            % P.plot() draws the polygon P in the current plot.
             %
             % P.plot(LS) as above but pass the arguments LS to plot.
+            %
+            % Notes::
+            % - The polygon is added to the current plot.
             
             opt.fill = [];
             [opt,args] = tb_optparse(opt, varargin);
@@ -222,6 +226,8 @@ classdef Polygon < handle
             %Polygon.area Area of polygon
             %
             % A = P.area() is the area of the polygon.
+            %
+            % See also Polygon.moments.
             a = p.moments(0, 0);
         end
         
@@ -230,15 +236,15 @@ classdef Polygon < handle
             %
             % A = P.moments(p, q) is the pq'th moment of the polygon.
             %
-            % See also mpq_poly.
+            % See also Polygon.area, Polygon.centroid, mpq_poly.
             m = mpq_poly(p.vertices, mp, mq);
         end
         
         function q = transform(p, T)
-            %Polygon.transform Transformation of polygon vertices
+            %Polygon.transform Transform polygon vertices
             %
             % P2 = P.transform(T) is a new Polygon object whose vertices have
-            % been transfored by the 3x3 homgoeneous transformation T.
+            % been transformed by the SE(2) homgoeneous transformation T (3x3).
             if length(T) == 3
                 T = se2(T);
             end
@@ -248,9 +254,9 @@ classdef Polygon < handle
         function f = inside(p, points)
             %Polygon.inside Test if points are inside polygon
             %
-            % IN = P.inside(P) tests if points given by columns of P are
-            % inside the polygon.  The corresponding elements of IN are
-            % either true or false.
+            % IN = P.inside(P) tests if points given by columns of P (2xN) are inside
+            % the polygon.  The corresponding elements of IN (1xN) are either true or
+            % false.
             IN = inpolygon(points(1,:), points(2,:), p.x, p.y)
         end
         
@@ -258,6 +264,8 @@ classdef Polygon < handle
             %Polygon.centroid Centroid of polygon
             %
             % X = P.centroid() is the centroid of the polygon.
+            %
+            % See also Polygon.moments.
             xc = p.moments(1,1) / p.area();
         end
         
@@ -289,9 +297,9 @@ classdef Polygon < handle
         function f = intersect_line(p, l)
             %Polygon.intersect_line Intersection of polygon and line segment
             %
-            % I = P.intersect_line(L) is the intersection points of a polygon P
-            % with the line segment L=[x1 x2; y1 y2].  I is an Nx2 matrix with
-            % one column per intersection, each column is [x y]'.
+            % I = P.intersect_line(L) is the intersection points of a polygon P with
+            % the line segment L=[x1 x2; y1 y2].  I (2xN) has one column per
+            % intersection, each column is [x y]'.
             
             f = [];
             % find intersections
@@ -384,7 +392,7 @@ classdef Polygon < handle
         function r = union(p, q)
             %Polygon.union Union of polygons
             %
-            % I = P.union(Q) is a Polygon representing the
+            % I = P.union(Q) is a polygon representing the
             % union of polygons P and Q.
             %
             % Notes::
@@ -428,8 +436,8 @@ classdef Polygon < handle
         function r = xor(p, q)
             %Polygon.xor Exclusive or of polygons
             %
-            % I = P.union(Q) is a Polygon representing the
-            % union of polygons P and Q.
+            % I = P.union(Q) is a polygon representing the
+            % exclusive-or of polygons P and Q.
             %
             % Notes::
             % - If these polygons are not intersecting, returns a polygon with
@@ -1296,6 +1304,7 @@ function [xo,yo] = intsecl(x1,y1,x2,y2,tol)
 end
 
 function [x1,y1,x2,y2] = linechk(x1,y1,x2,y2)
+    
     % LINECHK Input checking for line segments.
     
     %  Copyright (c) 1995 by Kirill K. Pankratov

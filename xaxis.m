@@ -7,6 +7,8 @@
 % XAXIS([MIN MAX]) as above.
 %
 % XAXIS restore automatic scaling for x-axis.
+%
+% See also YAXIS.
 
 % Copyright (C) 1993-2014, by Peter I. Corke
 %
