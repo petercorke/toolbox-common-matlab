@@ -188,7 +188,7 @@ function out = name2rgb(table, s, opt)
                 case 'rgb'
                     out = rgb;
                 case 'xy'
-                    XYZ = colorspace('RGB->XYZ', r);
+                    XYZ = colorspace('RGB->XYZ', rgb);
                     out = tristim2cc(XYZ);
                 case 'xyz'
                     out = colorspace('RGB->XYZ', rgb);
