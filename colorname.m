@@ -164,7 +164,7 @@ function r = colorname(a, varargin)
     end
 end
     
-function r = namelookup(table, s)
+function r = namelookup(table, s, opt)
     s = lower(s);   % all matching done in lower case
     
     r = {};
