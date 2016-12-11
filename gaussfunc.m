@@ -1,11 +1,20 @@
-%GAUSS1	Gaussian kernel
+%GAUSSFUNC	Gaussian kernel
 %
-%	k = gauss1(, c, sigma)
+%	G = GAUSSFUNC(MEAN, VARIANCE, X) is the value of the normal
+%	distribution (Gaussian) function with MEAN (1x1) and VARIANCE (1x1), at
+%   the point X.
 %
-%	Returns a unit volume Gaussian smoothing kernel.  The Gaussian has 
-%	a standard deviation of sigma, and the convolution
-%	kernel has a half size of w, that is, k is (2W+1) x (2W+1).
+%	G = GAUSSFUNC(MEAN, COVARIANCE, X, Y) is the value of the bivariate
+%	normal distribution (Gaussian) function with MEAN (1x2) and COVARIANCE
+%	(2x2), at the point (X,Y).
 %
+%   G = GAUSSFUNC(MEAN, COVARIANCE, X) as above but X (NxM) and the result
+%   is also (NxM).  X and Y values come from the column and row indices of
+%   X.
+%
+% Notes::
+% - X or Y can be row or column vectors, and the result will also be a vector.
+% - The area or volume under the curve is unity.
 
 % Copyright (C) 1993-2014, by Peter I. Corke
 %
@@ -25,16 +34,23 @@
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
-function g = gaussfunc(c, var, x, y)
+function g = gaussfunc(mu, variance, x, y)
 
-    if length(c) == 1
-        g = 1/sqrt(2*pi*var) * exp( -((x-c).^2)/(2*var) );
-    elseif length(c) == 2
+    if length(mu) == 1
+        % 1D case
+        assert(all(size(variance) == [1 1]), 'covariance must be a 1x1 matrix')
+                
+        g = 1/sqrt(2*pi*variance) * exp( -((x-mu).^2)/(2*variance) );
+    elseif length(mu) == 2
+        % 2D case
+        assert(length(mu) == 2, 'mean must be a 2-vector');
+        assert(all(size(variance) == [2 2]), 'covariance must be a 2x2 matrix')
+        
         if nargin < 4
             [x,y] = imeshgrid(x);
         end
-        xx = x(:)-c(1); yy = y(:)-c(2);
-        ci = inv(var);
-        g = 1/(2*pi*sqrt(det(var))) * exp( -0.5*(xx.^2*ci(1,1) + yy.^2*ci(2,2) + 2*xx.*yy*ci(1,2)));
+        xx = x(:)-mu(1); yy = y(:)-mu(2);
+        ci = inv(variance);
+        g = 1/(2*pi*sqrt(det(variance))) * exp( -0.5*(xx.^2*ci(1,1) + yy.^2*ci(2,2) + 2*xx.*yy*ci(1,2)));
         g = reshape(g, size(x));
     end
