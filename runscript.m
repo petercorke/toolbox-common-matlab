@@ -57,6 +57,8 @@ function runscript(fname, varargin)
         
     close all
     
+    curDir = pwd();
+    
     prevDockStatus = get(0,'DefaultFigureWindowStyle');
     if opt.dock
         set(0,'DefaultFigureWindowStyle','docked');
@@ -183,13 +185,18 @@ function runscript(fname, varargin)
         if compoundDepth == 0 && ~continMode
             % it's a simple executable statement, execute it
             fprintf(' \n');
-            evalSavedText(line, lineNum);
+            try
+                evalSavedText(line, lineNum);
+            catch
+                break
+            end
             shouldPause = true;
         end
     end
     fprintf('------ done --------\n');
     % restore the docking mode if we set it
     set(0,'DefaultFigureWindowStyle', prevDockStatus)
+    cd(curDir)
 end
 
     function evalSavedText(text, lineNum)
@@ -205,6 +212,7 @@ end
             fprintf('error in script %s at line %d', lineNum);
             m.rethrow();
         end
+        fprintf('\n');
     end
 
 % delay or prompt according to passed options
@@ -212,16 +220,14 @@ function scriptwait(opt)
     if isempty(opt.delay)
         %a = input('-', 's');
         prompt = 'continue?';
+        bs = repmat('\b', [1 length(prompt)]);
+        
         if exist('cprintf')
             cprintf('red', prompt); pause;
-            for i=1:length(prompt)
-                cprintf('text', '\b');
-            end
+            cprintf('text', bs);
         else
             fprintf(prompt); pause;
-            for i=1:length(prompt)
-                fprintf('\b');
-            end
+            fprintf(bs);
         end
     else
         pause(opt.delay);
