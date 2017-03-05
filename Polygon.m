@@ -35,7 +35,8 @@
 % and require a licence.  However the author does not respond to email regarding
 % the licence, so use with care, and modify with acknowledgement.
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

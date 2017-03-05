@@ -16,7 +16,8 @@
 % - X or Y can be row or column vectors, and the result will also be a vector.
 % - The area or volume under the curve is unity.
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
