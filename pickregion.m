@@ -9,6 +9,7 @@
 % 'ls',LS      Line style for foreground line (default ':y');
 % 'bg'LS,      Line style for background line (default '-k');
 % 'width',W    Line width (default 2)
+% 'pressed'    Don't wait for first button press, use current position
 %
 % Notes::
 % - Effectively a replacement for the builtin rbbox function which draws the box in
@@ -25,6 +26,7 @@ function [p1,p2]=pickregion(varargin)
     opt.ls = ':y';
     opt.bg = '-k';
     opt.width = 2;
+    opt.pressed = false;
     
     opt = tb_optparse(opt, varargin);
 
@@ -35,7 +37,9 @@ function [p1,p2]=pickregion(varargin)
     hold on;
     
     % Wait for left mouse button to be pressed
-    k=waitforbuttonpress;
+    if ~opt.pressed
+        k=waitforbuttonpress;
+    end
 
     % get current point
     p1=get(h,'CurrentPoint');       %get starting point
