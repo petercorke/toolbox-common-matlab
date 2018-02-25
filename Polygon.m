@@ -138,12 +138,32 @@ classdef Polygon < handle
             error('cant set property');
         end
         
-        function s = char(p)
+        function ss = char(p)
             %Polygon.char String representation
             %
             % S = P.char() is a compact representation of the polgyon in human
             % readable form.
-            s = sprintf('%d vertices', p.n);
+            ss = '';
+            for i=1:length(p)
+                if p(i).n <= 4
+                    if length(p) > 1
+                        s = sprintf('%2d: ', i);
+                    else
+                        s = '';
+                    end
+                    v = p(i).vertices;
+                    for k=1:p(i).n
+                        s = strcat(s, sprintf('(%g,%g)', v(:,k)));
+                        if k~=p(i).n
+                            s = strcat(s, ', ');
+                        end
+                    end
+                    
+                else
+                    s = sprintf('... %d vertices', p.n)
+                end
+                ss =strvcat(ss, s);
+            end
         end
         
         function display(p)
@@ -179,7 +199,7 @@ classdef Polygon < handle
             opt.fill = [];
             [opt,args] = tb_optparse(opt, varargin);
             
-            ish = ishold
+            ish = ishold;
             hold all
             
             for p=plist
@@ -220,7 +240,10 @@ classdef Polygon < handle
                     end
                 end
             end
-            hold(ish)
+            if ~ish
+                hold off
+            end
+                
         end
         
         function a = area(p)
@@ -258,7 +281,7 @@ classdef Polygon < handle
             % IN = P.inside(P) tests if points given by columns of P (2xN) are inside
             % the polygon.  The corresponding elements of IN (1xN) are either true or
             % false.
-            IN = inpolygon(points(1,:), points(2,:), p.x, p.y)
+            f = inpolygon(points(1,:), points(2,:), p.x, p.y);
         end
         
         function c = centroid(p)
@@ -267,7 +290,7 @@ classdef Polygon < handle
             % X = P.centroid() is the centroid of the polygon.
             %
             % See also Polygon.moments.
-            xc = p.moments(1,1) / p.area();
+            c = [p.moments(1,0) p.moments(0,1)] / p.area();
         end
         
         function r = perimeter(p)
