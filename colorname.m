@@ -59,13 +59,13 @@ function out = colorname(a, varargin)
     if isempty(rgbtable)
         % load mapping table from file
         fprintf('loading rgb.txt\n');
-        f = fopen('private/rgb.txt', 'r');
+        f = fopen('data/rgb.txt', 'r');
         k = 0;
         rgb = [];
         names = {};
         xy = [];
         
-        while ~feof(f),
+        while ~feof(f)
             line = fgets(f);
             if line(1) == '#',
                 continue;
