@@ -31,7 +31,7 @@ function mmlabel(lab, varargin)
 	% find all child axes (subplots)
 	h = findobj(gcf, 'Type', 'axes');
 
-	for i=1:length(h),
+	for i=1:length(h)
 
 		if strcmp( get(h(i), 'visible'), 'on'),
 			axes(h(i))
