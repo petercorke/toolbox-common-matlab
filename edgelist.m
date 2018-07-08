@@ -64,7 +64,11 @@ function [e,d] = edgelist(im, P, direction)
     end
 
     P = P(:);
-    pix0 = im(P(2), P(1));  % color of pixel we start at
+    try
+        pix0 = im(P(2), P(1));  % color of pixel we start at
+    catch
+        error('MVTB:edgelist', 'specified coordinate is not within image');
+    end
     P0 = [];
     
     % find an adjacent point outside the blob
