@@ -1,5 +1,10 @@
+%GETPROFILEFUNCTIONSTATS Summary of this function goes here
+% Detailed explanation goes here
+%
+% Author::
+%  Joern Malzahn, (joern.malzahn@tu-dortmund.de)
 
-% Copyright (C) 1993-2017, by Peter I. Corke
+% Copyright (C) 2012-2018, by Joern Malzahn
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -17,9 +22,8 @@
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
+
 function [ funstats] = getprofilefunctionstats( pstats , desfun, varargin)
-%GETPROFILEFUNCTIONSTATS Summary of this function goes here
-%   Detailed explanation goes here
 
 nEl = numel(pstats.FunctionTable);
 desfname = which(desfun);
@@ -31,23 +35,24 @@ end
 
 funtype = '';
 if nargin == 3
-    funtype = lower(varargin{1});
-    
-        if ~(strcmp(funtype,'m-function') || strcmp(funtype,'mex-function'))
+    switch lower(varargin{1})
+        case 'm-function'
+        case 'mex-function'
+        otherwise
             error('funtype must be either ''M-function'' or ''MEX-function''!');
         end
+else
+    desfun = [desfun '.m'];
 end
+
 
 for iEl = 1:nEl
     curstats = pstats.FunctionTable(iEl);
     
-    if (strcmp(curstats.FileName,desfname))
-        if strcmpi(curstats.Type,funtype) || isempty(funtype)
-            funstats = curstats;
-            return
-        end
+    if string(curstats.FileName).endsWith(desfun)
+        funstats = curstats;
+        return
     end
-    
 end
 
 end
