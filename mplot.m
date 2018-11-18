@@ -1,4 +1,7 @@
-%MPLOT	Plot time series data
+%MPLOT Plot time-series data
+%
+% A convenience function for plotting time-series data held in a matrix.
+% Each row is a timestep and the first column is time.
 %
 % MPLOT(Y, OPTIONS) plots the time series data Y(NxM) in multiple 
 % subplots.  The first column is assumed to be time, so M-1 plots are
@@ -8,9 +11,10 @@
 % subplots.  Time is provided explicitly as the first argument so M plots
 % are produced.
 %
-% MPLOT(S, OPTIONS) as above but S is a structure.  Each field is assumed 
-% to be a time series which is plotted.  Time is taken from the field 
-% called 't'.
+% MPLOT(S, OPTIONS) as above but S is a structure.  Each field is assumed
+% to be a time series which is plotted.  Time is taken from the field
+% called 't'.  Plots are labelled according to the name of the
+% corresponding field.
 %
 % MPLOT(W, OPTIONS) as above but W is a structure created by the Simulink 
 % write to workspace block where the save format is set to "Structure 
@@ -27,11 +31,16 @@
 %
 % Notes::
 % - In all cases a simple GUI is created which is invoked by a right
-%   click anywhere on one of the plots.  The supported options are:
-%   - 
+%   clicking on one of the plotted lines.  The supported options are:
+%   - zoom in the x-direction
+%   - shift view to the left or right
+%   - unzoom
+%   - show data points
 %
+% See also plot2, plotp.
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

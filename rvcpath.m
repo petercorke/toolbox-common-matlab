@@ -2,8 +2,12 @@
 %
 % p = RVCPATH is the path of the top level folder for the installed RVC
 % tools.
+%
+% p = RVCPATH(FOLDER) is the full path of the specified FOLDER which is relative to the
+% installed RVC tools.
+%
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -21,5 +25,9 @@
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
-function p = rvcpath()
+function p = rvcpath(a)
     p = fileparts( which('startup_rvc.m') );
+    
+    if nargin > 0
+        p = fullfile(p, a);
+    end

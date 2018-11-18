@@ -25,7 +25,8 @@
 
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -100,11 +101,11 @@ function [zp,xypout, aout] = peak2(z, varargin)
                 
                 % now try to interpolate the peak over a 3x3 window
                 
-                zc = z(x,   y);
-                zn = z(x,   y-1);
-                zs = z(x,   y+1);
-                ze = z(x+1, y);
-                zw = z(x-1, y);
+                zc = z(y,   x);
+                zn = z(y-1, x);
+                zs = z(y+1, x);
+                ze = z(y,   x+1);
+                zw = z(y,   x-1);
                 
                 dx = (ze - zw)/(2*(2*zc - ze - zw));
                 dy = (zn - zs)/(2*(zn - 2*zc + zs));
@@ -117,7 +118,7 @@ function [zp,xypout, aout] = peak2(z, varargin)
             catch
                 % handle situation where neighbourhood falls off the data
                 % vector
-                warning('Peak at %f too close to edge of image, skipping', x(i));
+                warning('Peak at (%d,%d) too close to edge of image, skipping', x, y);
                 continue;
             end
             %

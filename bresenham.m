@@ -1,103 +1,107 @@
 %BRESENHAM Generate a line
 %
-% P = BRESENHAM(X1, Y1, X2, Y2) is a list of integer coordinates (2xN) for 
-% points lying on the line segement (X1,Y1) to (X2,Y2).
+% P = BRESENHAM(X1, Y1, X2, Y2) is a list of integer coordinates (2xN) for
+% points lying on the line segment joining the integer coordinates (X1,Y1)
+% and (X2,Y2).
 %
-% P = BRESENHAM(P1, P2) as above but P1=[X1,Y1] and P2=[X2,Y2].
+% P = BRESENHAM(P1, P2) as above but P1=[X1; Y1] and P2=[X2; Y2].
 %
 % Notes::
-% - Endpoints must be integer values.
+% - Endpoint coordinates must be integer values.
+%
+% Author::
+% - Based on code by Aaron  Wetzler
 %
 % See also ICANVAS.
 
-
-
-
-% Copyright (C) 1993-2014, by Peter I. Corke
+% http://www.mathworks.com/matlabcentral/fileexchange/28190-bresenham-optimized-for-matlab
+% Copyright (c) 2010, Aaron  Wetzler
+% All rights reserved.
 %
-% This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
-% RTB is free software: you can redistribute it and/or modify
-% it under the terms of the GNU Lesser General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
-% 
-% RTB is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU Lesser General Public License for more details.
-% 
-% You should have received a copy of the GNU Leser General Public License
-% along with RTB.  If not, see <http://www.gnu.org/licenses/>.
+% Redistribution and use in source and binary forms, with or without
+% modification, are permitted provided that the following conditions are
+% met:
 %
-% http://www.petercorke.com
+%     * Redistributions of source code must retain the above copyright
+%       notice, this list of conditions and the following disclaimer.
+%     * Redistributions in binary form must reproduce the above copyright
+%       notice, this list of conditions and the following disclaimer in
+%       the documentation and/or other materials provided with the distribution
+%
+% THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+% AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+% IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+% ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+% LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+% CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+% SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+% INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+% CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+% ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+% POSSIBILITY OF SUCH DAMAGE.
+
 
 function p = bresenham(x1, y1, x2, y2)
-
+    
     if nargin == 2
         p1 = x1; p2 = y1;
-
+        
         x1 = p1(1); y1 = p1(2);
         x2 = p2(1); y2 = p2(2);
     elseif nargin ~= 4
         error('expecting 2 or 4 arguments');
     end
-
-    x = x1;
-    if x2 > x1
-        xd = x2-x1;
-        dx = 1;
-    else
-        xd = x1-x2;
-        dx = -1;
+    
+    % ensure all values are integer
+    x1=round(x1); x2=round(x2);
+    y1=round(y1); y2=round(y2);
+    
+    % compute the vertical and horizontal change
+    dx=abs(x2-x1);
+    dy=abs(y2-y1);
+    steep=abs(dy)>abs(dx);
+    
+    if steep
+        % if slope > 1 swap the deltas
+        t=dx;
+        dx=dy;
+        dy=t; 
     end
-
-    y = y1;
-    if y2 > y1
-        yd = y2-y1;
-        dy = 1;
+    
+    %The main algorithm goes here.
+    if dy==0
+        % 
+        q=zeros(dx+1,1);
     else
-        yd = y1-y2;
-        dy = -1;
+        q=[0;diff(mod([floor(dx/2):-dy:-dy*dx+floor(dx/2)]',dx))>=0];
     end
-
-    p = [];
-
-    if xd > yd
-      a = 2*yd;
-      b = a - xd;
-      c = b - xd;
-
-      while 1
-        p = [p; x y];
-        if all([x-x2 y-y2] == 0)
-            break
-        end
-        if  b < 0
-            b = b+a;
-            x = x+dx;
+    
+    %and ends here.
+    
+    if steep
+        if y1<=y2
+            y=[y1:y2]';
         else
-            b = b+c;
-            x = x+dx; y = y+dy;
+            y=[y1:-1:y2]';
         end
-      end
-    else
-      a = 2*xd;
-      b = a - yd;
-      c = b - yd;
-
-      while 1
-        p = [p; x y];
-        if all([x-x2 y-y2] == 0)
-            break
-        end
-        if  b < 0
-            b = b+a;
-            y = y+dy;
+        if x1<=x2
+            x=x1+cumsum(q);
         else
-            b = b+c;
-            x = x+dx; y = y+dy;
+            x=x1-cumsum(q);
         end
-      end
+    else
+        if x1<=x2
+            x=[x1:x2]';
+        else
+            x=[x1:-1:x2]';
+        end
+        if y1<=y2
+            y=y1+cumsum(q);
+        else
+            y=y1-cumsum(q);
+        end
     end
+    
+    p = [x y];
+    
 end

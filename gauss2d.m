@@ -4,7 +4,8 @@
 % matrix OUT (WxH) the same size as IM (WxH). The Gaussian has a standard 
 % deviation of SIGMA.  The Gaussian is centered at C=[U,V].
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

@@ -1,6 +1,6 @@
 %RUNSCRIPT Run an M-file in interactive fashion
 %
-% RUNSCRIPT(FNAME, OPTIONS) runs the M-file FNAME and pauses after every
+% RUNSCRIPT(SCRIPT, OPTIONS) runs the M-file SCRIPT and pauses after every
 % executable line in the file until a key is pressed.  Comment lines are shown
 % without any delay between lines.
 %
@@ -9,16 +9,21 @@
 % 'cdelay',D   Pause of D seconds after each comment line (default 0)
 % 'begin'      Start executing the file after the comment line %%begin (default false)
 % 'dock'       Cause the figures to be docked when created
-% 'path',P     Look for the file FNAME in the folder P (default .)
+% 'path',P     Look for the file SCRIPT in the folder P (default .)
 % 'dock'       Dock figures within GUI
+% 'nocolor'    Don't use cprintf to print lines in color (comments black, code blue)
 %
 % Notes::
-% - If no file extension is given in FNAME, .m is assumed.
+% - If no file extension is given in SCRIPT, .m is assumed.
+% - A copyright text block will be skipped and not displayed.
+% - If cprintf exists and 'nocolor' is not given then lines are displayed
+%   in color.
+% - Leading comment characters are not displayed.
 % - If the executable statement has comments immediately afterward (no blank lines)
 %   then the pause occurs after those comments are displayed.
 % - A simple '-' prompt indicates when the script is paused, hit enter.
 % - If the function cprintf() is in your path, the display is more
-%   colorful, you can get this file from MATLAB Central.
+%   colorful.  You can get this file from MATLAB File Exchange.
 % - If the file has a lot of boilerplate, you can skip over and not display
 %   it by giving the 'begin' option which searchers for the first line
 %   starting with %%begin and commences execution at the line after that.
@@ -26,7 +31,8 @@
 % See also eval.
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -52,10 +58,17 @@ function runscript(fname, varargin)
     opt.begin = false;
     opt.cdelay = 0;
     opt.dock = false;
+    opt.color = true;
     
     opt = tb_optparse(opt, varargin);
+    
+    if ~exist('cprintf') 
+        opt.color = false;
+    end
         
     close all
+    
+    curDir = pwd();
     
     prevDockStatus = get(0,'DefaultFigureWindowStyle');
     if opt.dock
@@ -86,6 +99,8 @@ function runscript(fname, varargin)
     
     lineNum = 1;
     
+    skipping = false;
+    
     % stashMode
     %  0 normal
     %  1 loop
@@ -101,6 +116,11 @@ function runscript(fname, varargin)
         end
         lineNum = lineNum+1;
         
+        if startswith(line, '% Copyright')
+            skipping = true;
+            continue;
+        end
+        
         % logic to skip lines until we see one beginning with %%begin
         if ~running
             if strcmp(line, '%%begin')
@@ -112,15 +132,21 @@ function runscript(fname, varargin)
         
         if length(strtrim(line)) == 0
             % blank line
+            
+            if skipping
+                skipping = false;
+            end
             fprintf('\n');
             if shouldPause
                 scriptwait(opt);
                 shouldPause = false;
             end
             continue
+        elseif skipping
+            continue;
         elseif startswith(strtrim(line), '%')
             % line was a comment
-            disp(line)
+            disp( strtrim(line(2:end)) )
             pause(opt.cdelay)  % optional comment delay
             continue;
         else
@@ -148,8 +174,8 @@ function runscript(fname, varargin)
         end
         
         % display the line with a pretend MATLAB prompt
-        if exist('cprintf')
-            cprintf('blue', '%s%s\n', prompt, line)
+        if opt.color
+            cprintf('blue', '%s%s', prompt, line)
         else
             fprintf('%s', prompt); disp(line)
         end
@@ -164,7 +190,7 @@ function runscript(fname, varargin)
             
             compoundDepth = compoundDepth - 1;
             if compoundDepth == 0
-                evalSavedText(savedText, lineNum);
+                evalSavedText(savedText, lineNum, opt);
                 savedText = '';
                 shouldPause = true;
             end
@@ -173,7 +199,7 @@ function runscript(fname, varargin)
         elseif continMode && ~endswith(line, '...')
             % no longer in continuation mode
             
-            evalSavedText(savedText, lineNum);
+            evalSavedText(savedText, lineNum, opt);
             savedText = '';
             continMode = false;
             shouldPause = true;
@@ -183,16 +209,21 @@ function runscript(fname, varargin)
         if compoundDepth == 0 && ~continMode
             % it's a simple executable statement, execute it
             fprintf(' \n');
-            evalSavedText(line, lineNum);
+            try
+                evalSavedText(line, lineNum, opt);
+            catch
+                break
+            end
             shouldPause = true;
         end
     end
     fprintf('------ done --------\n');
     % restore the docking mode if we set it
     set(0,'DefaultFigureWindowStyle', prevDockStatus)
+    cd(curDir)
 end
 
-    function evalSavedText(text, lineNum)
+    function evalSavedText(text, lineNum, opt)
         if length(strtrim(text)) == 0
             return
         end
@@ -200,11 +231,18 @@ end
         text = sprintf(text);
         
         try
-            evalin('base', text);
+            if opt.color
+                text = strrep(text, '''', ''''''); % fix single quotes
+                t = evalin('base', strcat('evalc(''', text, ''')') );
+                cprintf('blue', '%s', t);
+            else
+                evalin('base', text);
+            end
         catch m
-            fprintf('error in script %s at line %d', lineNum);
+            fprintf('error in script %s at line %d', fname, lineNum);
             m.rethrow();
         end
+        fprintf('\n');
     end
 
 % delay or prompt according to passed options
@@ -212,16 +250,14 @@ function scriptwait(opt)
     if isempty(opt.delay)
         %a = input('-', 's');
         prompt = 'continue?';
-        if exist('cprintf')
+        bs = repmat('\b', [1 length(prompt)]);
+        
+        if opt.color
             cprintf('red', prompt); pause;
-            for i=1:length(prompt)
-                cprintf('text', '\b');
-            end
+            cprintf('text', bs);
         else
             fprintf(prompt); pause;
-            for i=1:length(prompt)
-                fprintf('\b');
-            end
+            fprintf(bs);
         end
     else
         pause(opt.delay);

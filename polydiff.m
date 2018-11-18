@@ -3,9 +3,15 @@
 % PD = POLYDIFF(P) is a vector of coefficients of a polynomial (1xN-1) which is the
 % derivative of the polynomial P (1xN).
 %
+%          p = [3 2 -1];
+%          polydiff(p)
+%          ans =
+%              6     2
+%
 % See also POLYVAL.
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 

@@ -49,9 +49,9 @@
 %
 % See also ccode, matlabFunction.
 
-% Copyright (C) 2012-2014, by Joern Malzahn
+% Copyright (C) 2012-2018, by Joern Malzahn
 %
-% This file is part of The Robotics Toolbox for Matlab (RTB).
+% This file is part of The Robotics Toolbox for MATLAB (RTB).
 %
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
@@ -217,13 +217,15 @@ funstr = sprintf('%s\n%s',...
 
 % Actual code
 % use f.' here, because of column/row indexing in C
- eval([opt.outputName{1}, ' = f.''; codestr = ccode(',opt.outputName{1},');'])
+codestr = '';
+if ~isequal(f, sym(zeros(size(f))))
+    eval([opt.outputName{1}, ' = f.''; codestr = ccode(',opt.outputName{1},');'])
+end
 
 if isscalar(f)
     % in the case of scalar expressions the resulting ccode always
     % begins with '  t0'. Replace that with the desired name.
-    codestr(1:4) = [];
-    codestr = [opt.outputName{1}, codestr];
+    codestr = strrep(codestr,'t0',opt.outputName{1});
 end
 
 funstr = sprintf('%s\n%s',...

@@ -1,14 +1,17 @@
-%PLOTP Plot trajectories
+%PLOTP Plot trajectory
+%
+% Convenience function to plot points stored columnwise.
 %
 % PLOTP(P) plots a set of points P, which by Toolbox convention are stored
-% one per column.  P can be Nx2 or Nx3.  By default a linestyle of 'bx'
+% one per column.  P can be 2xN or 3xN.  By default a linestyle of 'bx'
 % is used.
 %
 % PLOTP(P, LS) as above but the line style arguments LS are passed to plot.
 %
 % See also PLOT, PLOT2.
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -31,8 +34,10 @@ function h = plotp(p1, varargin)
     if length(varargin) == 0
         varargin = {'bx'};
     end
+    
+    assert(any(numrows(p1) == [2 3]), 'RTB:plotp:badarg', '2D or 3D points, columnwise, only');
 
-    if numrows(p1) == 3,
+    if numrows(p1) == 3
         hh = plot3(p1(1,:), p1(2,:), p1(3,:), varargin{:});
         xyzlabel
     else
@@ -40,6 +45,6 @@ function h = plotp(p1, varargin)
         xlabel('x');
         ylabel('y');
     end
-    if nargout == 1,
+    if nargout == 1
         h = hh;
     end

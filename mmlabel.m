@@ -1,8 +1,13 @@
-%MLABEL	labels for mplot style graph
+%MMLABEL	labels for mplot style graph
 %
-%	mlabel({lab1 lab2 lab3})
+%	mmlabel({lab1 lab2 lab3})
+%
+% Notes::
+% - was previously (rev 9) named mlabel() but changed to avoid clash with the
+%   Mapping Toolbox.
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -21,12 +26,12 @@
 %
 % http://www.petercorke.com
 
-function mlabel(lab, varargin)
+function mmlabel(lab, varargin)
 
 	% find all child axes (subplots)
 	h = findobj(gcf, 'Type', 'axes');
 
-	for i=1:length(h),
+	for i=1:length(h)
 
 		if strcmp( get(h(i), 'visible'), 'on'),
 			axes(h(i))

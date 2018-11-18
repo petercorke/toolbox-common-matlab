@@ -1,7 +1,7 @@
 %EDGELIST Return list of edge pixels for region
 %
-% EG = EDGELIST(IM, SEED) is a list of edge pixels (Nx2) of a region in the
-% image IM starting at edge coordinate SEED=[X,Y].  The edgelist has one row per
+% EG = EDGELIST(IM, SEED) is a list of edge pixels (2xN) of a region in the
+% image IM starting at edge coordinate SEED=[X,Y].  The edgelist has one column per
 % edge point coordinate (x,y).  
 %
 % EG = EDGELIST(IM, SEED, DIRECTION) as above, but the direction of edge
@@ -30,7 +30,8 @@
 %
 % See also ILABEL.
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -62,12 +63,17 @@ function [e,d] = edgelist(im, P, direction)
         neighbours = [8:-1:1];  % neigbours in counter-clockwise direction
     end
 
-    P = P(:)';
-    P0 = P;     % make a note of where we started
-    pix0 = im(P(2), P(1));  % color of pixel we start at
-
+    P = P(:);
+    try
+        pix0 = im(P(2), P(1));  % color of pixel we start at
+    catch
+        error('MVTB:edgelist', 'specified coordinate is not within image');
+    end
+    P0 = [];
+    
     % find an adjacent point outside the blob
     Q = adjacent_point(im, P, pix0);
+
     if isempty(Q)
         error('no neighbour outside the blob');
     end
@@ -76,13 +82,13 @@ function [e,d] = edgelist(im, P, direction)
     dir = []; % initialize the direction list
 
     % these are directions of 8-neighbours in a clockwise direction
-    dirs = [-1 0; -1 1; 0 1; 1 1; 1 0; 1 -1; 0 -1; -1 -1];
+    dirs = [-1 0; -1 1; 0 1; 1 1; 1 0; 1 -1; 0 -1; -1 -1]';
 
     while 1
         % find which direction is Q
         dQ = Q - P;
         for kq=1:8
-            if all(dQ == dirs(kq,:))
+            if all(dQ == dirs(:,kq))
                 break;
             end
         end
@@ -98,7 +104,7 @@ function [e,d] = edgelist(im, P, direction)
             dir = [dir; k];
 
             % compute coordinate of the k'th neighbour
-            Nk = P + dirs(k,:);
+            Nk = P + dirs(:,k);
             try
                 if im(Nk(2), Nk(1)) == pix0
                     % if this neighbour is in the blob it is the next edge pixel
@@ -110,12 +116,17 @@ function [e,d] = edgelist(im, P, direction)
         end
 
         % check if we are back where we started
-        if all(P == P0)
-            break;
+        if isempty(P0)
+                P0 = P;     % make a note of where we started
+        else
+            if all(P == P0)
+                break;
+            end
         end
 
+
         % keep going, add P to the edgelist
-        e = [e; P];
+        e = [e P];
     end
     
     if nargout > 1
@@ -125,9 +136,9 @@ end
 
 function P = adjacent_point(im, seed, pix0)
     % find an adjacent point not in the region
-    dirs = [1 0; 0 1; -1 0; 0 -1];
+    dirs = [1 0; 0 1; -1 0; 0 -1; -1 1; -1 -1; 1 -1; 1 1];
     for d=dirs'
-        P = [seed(1)+d(1), seed(2)+d(2)];
+        P = seed(:) + d;
         try
             if im(P(2), P(1)) ~= pix0
                 return;

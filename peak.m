@@ -22,13 +22,14 @@
 % - To find minima, use PEAK(-V).
 % - The interp options fits points in the neighbourhood about the peak with
 %   an M'th order polynomial and its peak position is returned.  Typically
-%   choose M to be odd.  In this case XP will be non-integer.
+%   choose M to be even.  In this case XP will be non-integer.
 %
 % See also PEAK2.
 
 
 
-% Copyright (C) 1993-2014, by Peter I. Corke
+
+% Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
 % 
@@ -65,9 +66,7 @@ function [yp,xpout] = peak(y, varargin)
     if ~isempty(args)
         x = args{1};
         x = x(:);
-        if length(x) ~= length(y)
-            error('second argument must be same length as first');
-        end
+        assert(length(x) == length(y), 'RTB:peak:interp', 'second argument must be same length as first');
     else
         x = [1:length(y)]';
     end
@@ -102,9 +101,7 @@ function [yp,xpout] = peak(y, varargin)
 
     % interpolate the peaks if required
     if opt.interp
-        if opt.interp < 2
-            error('interpolation polynomial must be at least second order');
-        end
+        assert(opt.interp >= 2, 'RTB:peak:badarg',  'interpolation polynomial must be at least second order');
         
         xp = [];
         yp = [];
