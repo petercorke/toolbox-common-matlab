@@ -67,16 +67,14 @@ function [e,d] = edgelist(im, P, direction)
     try
         pix0 = im(P(2), P(1));  % color of pixel we start at
     catch
-        error('MVTB:edgelist', 'specified coordinate is not within image');
+        error('TBCOMMON:edgelist', 'specified coordinate is not within image');
     end
     P0 = [];
     
     % find an adjacent point outside the blob
     Q = adjacent_point(im, P, pix0);
 
-    if isempty(Q)
-        error('no neighbour outside the blob');
-    end
+    assert(~isempty(Q), 'TBCOMMON:edgelist', 'no neighbour outside the blob');
 
     e = P;  % initialize the edge list
     dir = []; % initialize the direction list
@@ -84,7 +82,7 @@ function [e,d] = edgelist(im, P, direction)
     % these are directions of 8-neighbours in a clockwise direction
     dirs = [-1 0; -1 1; 0 1; 1 1; 1 0; 1 -1; 0 -1; -1 -1]';
 
-    while 1
+    while true
         % find which direction is Q
         dQ = Q - P;
         for kq=1:8
@@ -123,7 +121,6 @@ function [e,d] = edgelist(im, P, direction)
                 break;
             end
         end
-
 
         % keep going, add P to the edgelist
         e = [e P];
