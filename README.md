@@ -1,14 +1,7 @@
 ## Synopsis
 
-Common code for MATLAB toolboxes for Robotics, Machine Vision.  Supports argument parsing, plotting (points, lines, ellipses, circles, boxes, polygones), figures, animation, arrows, polygons, graphs and may  mathematical operations and datatypes.
+Common code for MATLAB toolboxes for Robotics and Machine Vision.
 
-
-## Code Example
-
-```
->> about ans
-ans [double] : 3x3 (72 bytes)
-```
 
 ## Motivation
 
@@ -21,7 +14,8 @@ Relevant files are included in the distributions of Robotics Toolbox for MATLAB 
 To use this, my development repo, directly:
   * clone this repo
   * clone RTB or MVTB
-  * ensure that both are in your MATLAB path
+  * clone Spatial Math Toolbox for MATLAB
+  * ensure that all are in your MATLAB path
   
 ## API Reference
 
