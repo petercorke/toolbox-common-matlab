@@ -1,47 +1,65 @@
-disp('Robotics, Vision & Control: (c) Peter Corke 1992-2019 http://www.petercorke.com')
-
-if verLessThan('matlab', '7.0')
-    warning('You are running a very old (and unsupported) version of MATLAB.  You will very likely encounter significant problems using the toolboxes but you are on your own with this');
-end
-tb = false;
-rvcpath = fileparts( mfilename('fullpath') );
-
-robotpath = fullfile(rvcpath, 'robot');
-if exist(robotpath, 'dir')
-    addpath(robotpath);
-    tb = true;
-    if exist('startup_rtb') == 2
-        startup_rtb
-    end
-end
-
-visionpath = fullfile(rvcpath, 'vision');
-if exist(visionpath, 'dir')
-    addpath(visionpath);
-    tb = true;
-    if exist('startup_mvtb') == 2
-        startup_mvtb
-    end
-end
-
-if tb
-    % RTB or MVTB is present
+function startup_rvc
+    disp('Robotics, Vision & Control: (c) Peter Corke 1992-2019 http://www.petercorke.com')
     
-    % add common files
-    addpath(fullfile(rvcpath, 'common'));
+    if verLessThan('matlab', '7.0')
+        warning('You are running a very old (and unsupported) version of MATLAB.  You will very likely encounter significant problems using the toolboxes but you are on your own with this');
+    end
+    tb = false;
+    startup_path = fileparts( mfilename('fullpath') );
+    rvcpath = fileparts(startup_path);
     
-    % add spatial math toolbox
-    if exist('./smtb', 'dir')
-        addpath(fullfile(rvcpath, 'smtb'));
+    robotpath = fullfile(rvcpath, 'robot');
+    if exist(robotpath, 'dir')
+        addpath(robotpath);
+        tb = true;
+        if exist('startup_rtb') == 2
+            startup_rtb
+        end
     end
     
-    % add a top-level simulink folder as created for mltbx installs
-    if exist('./simulink', 'dir')
-        addpath(fullfile(rvcpath, 'simulink'));
+    visionpath = fullfile(rvcpath, 'vision');
+    if exist(visionpath, 'dir')
+        addpath(visionpath);
+        tb = true;
+        if exist('startup_mvtb') == 2
+            startup_mvtb
+        end
     end
+    
+    if tb
+        % RTB or MVTB is present
+        
+
+        
+        % add spatial math toolbox
+        p = fullfile(rvcpath, 'smtb');
+        if exist(p, 'dir')
+            try
+                fp = fopen( fullfile(p, 'RELEASE'), 'r');
+                release = fgetl(fp);
+                fclose(fp);
+            catch ME
+                release = [];
+            end
+            if release
+                release = ['(release ' release ')'];
+            else
+                release = '';
+            end
+            fprintf('- Spatial Math Toolbox for MATLAB %s\n', release)
+            addpath(p);
+        end
+        
+        % add a top-level simulink folder as created for mltbx installs
+        p = fullfile(rvcpath, 'simulink');
+        if exist(p, 'dir')
+            addpath();
+        end
+        
+        % add common files
+        addpath(fullfile(rvcpath, 'common'));
+    end
+        
+    % check for any install problems
+    rvccheck(false)
 end
-
-clear tb rvcpath robotpath visionpath
-
-% check for any install problems
-rvccheck
