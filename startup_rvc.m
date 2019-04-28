@@ -6,7 +6,14 @@ function startup_rvc
     end
     tb = false;
     startup_path = fileparts( mfilename('fullpath') );
-    rvcpath = fileparts(startup_path);
+    [~,folder]=fileparts(startup_path);
+    if strcmp(folder, 'common')
+        % startup_rvc is in common folder
+        rvcpath = fileparts(startup_path);
+    else
+        % startup_rvc is in folder above common
+        rvcpath = startup_path;
+    end
     
     robotpath = fullfile(rvcpath, 'robot');
     if exist(robotpath, 'dir')
@@ -58,6 +65,8 @@ function startup_rvc
         
         % add common files
         addpath(fullfile(rvcpath, 'common'));
+    else
+        fprintf('Neither Robotics Toolbox or MachineVision Toolbox found in %s\n', rvcpath);
     end
         
     % check for any install problems
